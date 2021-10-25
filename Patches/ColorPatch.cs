@@ -1,9 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using Game;
 using HarmonyLib;
-using static Heatmap.Logging.Logging;
 using Heatmap.UI;
 using UnityEngine;
+using static Heatmap.Logging.Logging;
 
 namespace Heatmap.Patches
 {

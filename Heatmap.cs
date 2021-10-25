@@ -5,9 +5,9 @@ using Game.Context;
 using Game.Level;
 using Game.Mod;
 using Game.Railroad;
-using static Heatmap.Logging.Logging;
 using HarmonyLib;
 using Utils;
+using static Heatmap.Logging.Logging;
 
 namespace Heatmap
 {

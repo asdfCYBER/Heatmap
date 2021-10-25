@@ -1,5 +1,5 @@
-﻿using static Heatmap.Logging.Logging;
-using UnityEngine;
+﻿using UnityEngine;
+using static Heatmap.Logging.Logging;
 
 namespace Heatmap.UI
 {
