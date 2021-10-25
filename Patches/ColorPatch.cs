@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Game;
 using HarmonyLib;
 using Heatmap.UI;
@@ -18,10 +18,8 @@ namespace Heatmap.Patches
         {
             if (HeatmapToggle.HeatmapEnabled && Heatmap.Instance.AllowOverlay)
             {
-                // TODO: replace this proof of concept with NodeTimeTracker stuff
-                float usagecount = __instance.GetNodeForVisualState().UsageCount;
-                usagecount /= 5;
-                __result = new Color(usagecount, 1 - usagecount, 0);
+                float occupiedFraction = NodeTimerTracker.Instance.GetOccupiedTimeFraction(__instance.name);
+                __result = new Color(occupiedFraction, 1 - occupiedFraction, 0);
 
                 Log($"Node {__instance.name} now has color {__result}", LogLevel.Debug);
             }

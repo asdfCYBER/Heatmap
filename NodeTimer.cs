@@ -34,6 +34,12 @@ namespace Heatmap
             }
         }
 
+        public override string ToString()
+        {
+            return $"NodeTimer instance which started at {TimeOccupied} and " +
+                $"ended at {TimeCleared} (total time elapsed: {TimeElapsed})";
+        }
+
         public NodeTimer(TimeSpan timeOccupied)
         {
             TimeOccupied = timeOccupied;
