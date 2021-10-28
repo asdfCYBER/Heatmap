@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace Heatmap
 {
@@ -17,12 +18,14 @@ namespace Heatmap
         /// </summary>
         public TimeSpan TimeCleared { get; set; }
 
+        [JsonIgnore]
         public bool NodeIsCleared => TimeCleared != TimeSpan.Zero;
 
         /// <summary>
         /// Difference between the time at which the node
         /// became occupied and the time at which it was cleared
         /// </summary>
+        [JsonIgnore]
         public TimeSpan TimeElapsed
         {
             get
@@ -46,6 +49,7 @@ namespace Heatmap
             TimeCleared = TimeSpan.Zero;
         }
 
+        [JsonConstructor]
         public NodeTimer(TimeSpan timeOccupied, TimeSpan timeCleared)
         {
             TimeOccupied = timeOccupied;

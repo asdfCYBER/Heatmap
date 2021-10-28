@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -34,6 +34,10 @@
     <Reference Include="0Harmony">
       <HintPath>..\..\0Harmony.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rail Route\Rail Route_Data\Managed\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="RailRoute">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rail Route\Rail Route_Data\Managed\RailRoute.dll</HintPath>
     </Reference>
@@ -57,10 +61,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IO\NodeTimerIO.cs" />
+    <Compile Include="IO\Utils.cs" />
     <Compile Include="Logging\Logging.cs" />
     <Compile Include="NodeTimer.cs" />
-    <Compile Include="NodeTimeTracker.cs" />
+    <Compile Include="NodeTimerTracker.cs" />
     <Compile Include="Patches\ColorPatch.cs" />
+    <Compile Include="Patches\DeletePatch.cs" />
+    <Compile Include="Patches\LoadPatch.cs" />
+    <Compile Include="Patches\RenamePatch.cs" />
+    <Compile Include="Patches\SavePatch.cs" />
     <Compile Include="UI\HeatmapToggle.cs" />
     <Compile Include="Heatmap.cs" />
     <Compile Include="Patches\TrainEnteredPatch.cs" />
