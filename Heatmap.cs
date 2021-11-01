@@ -6,6 +6,7 @@ using Game.Level;
 using Game.Mod;
 using Game.Railroad;
 using HarmonyLib;
+using Heatmap.UI;
 using Utils;
 using static Heatmap.Logging.Logging;
 
@@ -24,6 +25,8 @@ namespace Heatmap
         public override CachedLocalizedString Title => "Heatmap";
 
         public override CachedLocalizedString Description => "Colors tracks based on how busy they are";
+
+        public ToolbarButton Toggle;
 
         /// <summary>
         /// true if the current gamemode is <see cref="GameMode.Play"/>, otherwise false.
@@ -72,12 +75,9 @@ namespace Heatmap
 
             if (_controller.CurrentMode == GameMode.Play)
             {
-                // Attach placeholder UI to some random object
-                // TODO: find proper object, and also make a proper UI
-                _controller.EventManager.gameObject.AddComponent<UI.HeatmapToggle>();
-
                 AllowOverlay = true;
                 EventManager.StartListening(EventManager.LevelStarted, InitializeTracker);
+                Toggle = new ToolbarButton();
             }
             else
             {

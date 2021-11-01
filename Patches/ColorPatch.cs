@@ -16,7 +16,7 @@ namespace Heatmap.Patches
         [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used by Harmony")]
         private static void Postfix(BoardNode __instance, ref Color __result)
         {
-            if (HeatmapToggle.HeatmapEnabled && Heatmap.Instance.AllowOverlay)
+            if (ToolbarButton.Instance.Value && Heatmap.Instance.AllowOverlay)
             {
                 float occupiedFraction = NodeTimerTracker.Instance.GetOccupiedTimeFraction(__instance.name);
                 __result = new Color(occupiedFraction, 1 - occupiedFraction, 0);
