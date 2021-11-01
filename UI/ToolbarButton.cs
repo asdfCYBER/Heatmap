@@ -17,7 +17,7 @@ namespace Heatmap.UI
         /// <summary>
         /// True if the heatmap button is toggled, otherwise false
         /// </summary>
-        public bool Value { get; private set; } = false;
+        public static bool Value { get; private set; } = false;
 
         private readonly MultiTargetButton _button;
 
@@ -52,6 +52,12 @@ namespace Heatmap.UI
             // Make the button a toggle
             _button.onClick = new Button.ButtonClickedEvent();
             _button.onClick.AddListener(Toggle);
+
+            // Not entirely sure what this exactly does, but it increases the
+            // layoutgroup size so that buttons are no longer squished
+            RectTransform rect = buttonGroup.gameObject.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(rect.sizeDelta.x, rect.sizeDelta.y * 1.5f);
+            rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, rect.anchoredPosition.y * 1.5f);
         }
 
         private void Toggle()
