@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Game;
 using Game.Context;
@@ -27,6 +27,8 @@ namespace Heatmap
         public override CachedLocalizedString Description => "Colors tracks based on how busy they are";
 
         public ToolbarButton Toggle;
+
+        public ColorGradient Gradient { get; set; } = ColorGradient.GreenRed;
 
         /// <summary>
         /// true if the current gamemode is <see cref="GameMode.Play"/>, otherwise false.
@@ -91,7 +93,6 @@ namespace Heatmap
         internal void InitializeTracker(object[] args)
         {
             Level level = (Level)args[0];
-            // TODO: load from file, use level.LevelDefinition.Uuid .TotalTime for a unique id
             Log($"Registering existing trains for level {level.LevelDefinition.Name}", LogLevel.Info);
             NodeTimerTracker.Instance.RegisterExistingTrains();
         }

@@ -19,7 +19,7 @@ namespace Heatmap.Patches
             if (ToolbarButton.Value && Heatmap.Instance.AllowOverlay)
             {
                 float occupiedFraction = NodeTimerTracker.Instance.GetOccupiedTimeFraction(__instance.name);
-                __result = new Color(occupiedFraction, 1 - occupiedFraction, 0);
+                __result = Heatmap.Instance.Gradient.GetColor(occupiedFraction * 100);
 
                 Log($"Node {__instance.name} now has color {__result}", LogLevel.Debug);
             }

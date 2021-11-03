@@ -73,6 +73,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ColorGradient.cs" />
     <Compile Include="IO\NodeTimerIO.cs" />
     <Compile Include="IO\Utils.cs" />
     <Compile Include="Logging\Logging.cs" />
