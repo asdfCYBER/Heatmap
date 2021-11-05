@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heatmap", "Heatmap.csproj", "{235DE31A-20B8-418E-A91A-59878E63CCF2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heatmap", "Heatmap\Heatmap.csproj", "{235DE31A-20B8-418E-A91A-59878E63CCF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heatmap.Unity", "Heatmap.Unity\Heatmap.Unity.csproj", "{22B01EE8-F5FD-4775-B142-191F96969235}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{235DE31A-20B8-418E-A91A-59878E63CCF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{235DE31A-20B8-418E-A91A-59878E63CCF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{235DE31A-20B8-418E-A91A-59878E63CCF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22B01EE8-F5FD-4775-B142-191F96969235}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22B01EE8-F5FD-4775-B142-191F96969235}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22B01EE8-F5FD-4775-B142-191F96969235}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22B01EE8-F5FD-4775-B142-191F96969235}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
