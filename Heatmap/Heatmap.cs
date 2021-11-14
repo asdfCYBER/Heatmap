@@ -26,10 +26,6 @@ namespace Heatmap
 
         public override CachedLocalizedString Description => "Colors tracks based on how busy they are";
 
-        public ToolbarButton Toggle;
-
-        public ColorGradient Gradient { get; set; } = ColorGradient.GreenRed;
-
         /// <summary>
         /// true if the current gamemode is <see cref="GameMode.Play"/>, otherwise false.
         /// UI and custom <see cref="BoardNode"/> coloring are turned off when false.
@@ -59,7 +55,6 @@ namespace Heatmap
 
         public override async Task OnDisable()
         {
-            // TODO: destroy UI components
             AllowOverlay = false;
             Log("Mod has been disabled", LogLevel.Info);
 
@@ -79,7 +74,8 @@ namespace Heatmap
             {
                 AllowOverlay = true;
                 EventManager.StartListening(EventManager.LevelStarted, InitializeTracker);
-                Toggle = new ToolbarButton();
+                ToolbarButton.Show();
+                SettingsPanel.Show();
             }
             else
             {

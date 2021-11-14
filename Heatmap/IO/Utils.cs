@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using UnityEngine;
 using static Heatmap.Logging.Logging;
 
 namespace Heatmap.IO
@@ -144,6 +145,19 @@ namespace Heatmap.IO
                     $"Message: {e.Message}", LogLevel.Exception);
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Loads the assetbundle with filename <paramref name="name"/>
+        /// from the directory this assembly is in
+        /// </summary>
+        /// <returns>The assetbundle, or null if loading failed</returns>
+        public static AssetBundle LoadAssetBundle(string name)
+        {
+            string assembly = Assembly.GetExecutingAssembly().Location;
+            string assetBundlePath = Path.Combine(Path.GetDirectoryName(assembly), name);
+
+            return AssetBundle.LoadFromFile(assetBundlePath);
         }
     }
 }

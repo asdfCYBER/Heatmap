@@ -29,12 +29,6 @@ namespace Heatmap.UI
         /// </summary>
         public ToolbarButton()
         {
-            // If for whatever reason there is already a button, destroy it
-            if (Instance != null)
-                Object.Destroy(Instance._buttonHolder);
-            
-            Instance = this;
-
             // Find the button that will be copied, and the layoutgroup it is in
             ModalDialogUiController modalDialog = Heatmap._controller.GameController.GetModalDialog();
             GameButton sourceButton = modalDialog.GameButtons.ContractsButtonHolder;
@@ -51,7 +45,8 @@ namespace Heatmap.UI
 
             // Make the button a toggle
             _button.onClick = new Button.ButtonClickedEvent();
-            _button.onClick.AddListener(Toggle);
+            _button.onClick.AddListener(ToggleValue);
+            _button.onRightClick.AddListener(SettingsPanel.ToggleShow);
 
             // Not entirely sure what this exactly does, but it increases the
             // layoutgroup size so that buttons are no longer squished
@@ -60,7 +55,19 @@ namespace Heatmap.UI
             rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, rect.anchoredPosition.y * 1.5f);
         }
 
-        private void Toggle()
+        public static void Show()
+        {
+            Destroy(); // destroy existing button if there is one
+            Instance = new ToolbarButton();
+        }
+
+        public static void Destroy()
+        {
+            if (Instance != null)
+                Object.Destroy(Instance._buttonHolder);
+        }
+
+        private void ToggleValue()
         {
             Value = !Value;
             Log($"Heatmap has been {(Value ? "enabled" : "disabled")}", LogLevel.Info);

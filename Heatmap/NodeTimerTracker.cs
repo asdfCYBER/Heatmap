@@ -98,9 +98,8 @@ namespace Heatmap
             if (!NodeTimers.ContainsKey(nodename))
                 return 0;
 
-            // use data from the past hour
-            // TODO: make measuring period configurable
-            TimeSpan measuringTime = TimeSpan.FromHours(0.25);
+            // use data from the last MeasuringPeriod minutes
+            TimeSpan measuringTime = TimeSpan.FromMinutes(Settings.Instance.MeasuringPeriod);
             TimeSpan measuringTimeStart = CurrentTime - measuringTime;
             List<NodeTimer> deletableTimers = new List<NodeTimer>();
 
@@ -113,8 +112,8 @@ namespace Heatmap
                 if (nodeTimer.TimeOccupied >= measuringTimeStart)
                 {
                     occupiedTime += nodeTimer.TimeElapsed.TotalMilliseconds;
-                    Log($"Adding fraction {occupiedTime} for timer entirely in " +
-                        $"the measuring period", LogLevel.Info);
+                    Log($"Adding {occupiedTime} ms for timer entirely in " +
+                        $"the measuring period", LogLevel.Debug);
                 }
                 // if TimeOccupied was before the start of the measuring period
                 // but TimeCleared after, the occupied time is partially counted
@@ -123,14 +122,14 @@ namespace Heatmap
                     // amount of time which falls outside of the measuring period
                     TimeSpan notmeasuredTime = measuringTimeStart - nodeTimer.TimeOccupied;
                     occupiedTime += (nodeTimer.TimeElapsed - notmeasuredTime).TotalMilliseconds;
-                    Log($"Adding fraction {occupiedTime} for timer partially in " +
-                        $"the measuring period", LogLevel.Info);
+                    Log($"Adding {occupiedTime} ms for timer partially in " +
+                        $"the measuring period", LogLevel.Debug);
                 }
                 // if both TimeOccupied and TimeCleared occured before the
                 // measuring period started then the NodeTimer can be deleted
                 else
                 {
-                    Log($"Marked {nodeTimer} as deletable at time {CurrentTime}", LogLevel.Info);
+                    Log($"Marked {nodeTimer} as deletable at time {CurrentTime}", LogLevel.Debug);
                     deletableTimers.Add(nodeTimer);
                 }
             }
@@ -138,11 +137,11 @@ namespace Heatmap
             NodeTimers[nodename].RemoveAll(timer => deletableTimers.Contains(timer));
 
             double fraction = occupiedTime / measuringTime.TotalMilliseconds;
-            Log($"node {nodename} has a busyness factor of {fraction:P1}", LogLevel.Info);
-            return (float)fraction * 2; // TODO: weighting (0.5 is now colored as 1.0)
+            Log($"Node {nodename} has a busyness factor of {fraction:P1}", LogLevel.Debug);
+            return (float)fraction;
         }
 
-        // Hide the constructor, this method should not be instantiated twice
+        // Hide the constructor, this class should not be instantiated twice
         private NodeTimerTracker() { }
     }
 }
