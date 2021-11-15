@@ -17,8 +17,7 @@ namespace Heatmap
         public Dictionary<string, List<NodeTimer>> NodeTimers = 
             new Dictionary<string, List<NodeTimer>>();
 
-        public static TimeSpan CurrentTime => 
-            Heatmap._controller.GameControllers.TimeController.CurrentTime;
+        public static TimeSpan CurrentTime => Heatmap._timeController.CurrentTime;
 
         /// <summary>
         /// Registers the node in <see cref="NodeTimers"/> as occupied
