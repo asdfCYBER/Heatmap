@@ -89,7 +89,7 @@ namespace Heatmap.UI
 
         public static void ToggleShow()
         {
-            if (Instance._panel == null)
+            if (Instance?._panel == null)
                 Show();
             else
                 Destroy();
