@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using System.Timers;
 using Game;
 using Game.Context;
 using Game.Level;
@@ -10,6 +9,7 @@ using Game.Time;
 using HarmonyLib;
 using Heatmap.UI;
 using Utils;
+using UnityEngine;
 using static Heatmap.Logging.Logging;
 
 namespace Heatmap
@@ -31,7 +31,7 @@ namespace Heatmap
         public override CachedLocalizedString Description
             => "Colors tracks based on how busy they are";
 
-        private Timer _timer = new Timer(1000); // one second timer for updating colors
+        private GameObject _timerObject;
 
         private int _timerIteration = 0; // tracks how often the timer has elapsed
 
@@ -60,7 +60,6 @@ namespace Heatmap
                     LogLevel.Exception);
             }
 
-            _timer.Elapsed += RefreshAllNodes;
             await Task.Yield();
         }
 
@@ -87,13 +86,15 @@ namespace Heatmap
                 AllowOverlay = true;
                 EventManager.StartListening(EventManager.LevelStarted, InitializeTracker);
                 ToolbarButton.Show();
-                _timer.Start(); // start auto-refreshing
+
+                _timerObject = new GameObject("timer");
+                _timerObject.AddComponent<AutoRefreshTimer>();
             }
             else
             {
                 AllowOverlay = false;
                 EventManager.StopListening(EventManager.LevelStarted, InitializeTracker);
-                _timer.Stop(); // stop auto-refreshing
+                UnityEngine.Object.Destroy(_timerObject);
             }
 
             await Task.Yield();
@@ -127,7 +128,7 @@ namespace Heatmap
         /// Called by a timer so BoardNodes which haven't had their
         /// AllocationState changed recently also change color
         /// </summary>
-        private void RefreshAllNodes(object sender, ElapsedEventArgs e)
+        internal void AutoRefreshAllNodes()
         {
             if (!_timeController.IsTimeRunning() || !AllowOverlay || !ToolbarButton.Value)
                 return;
