@@ -1,6 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Game;
+using Heatmap.IO;
 using Heatmap.Unity;
 using TMPro;
 using UnityEngine;
@@ -68,7 +68,8 @@ namespace Heatmap.UI
             // add all registered gradients as options to the dropdown, and set cividis as default
             _colormap.ClearOptions();
             _colormap.AddOptions(ColorGradient.Gradients.Keys.ToList());
-            _colormap.value = _colormap.options.FindIndex(option => option.text == Settings.Instance.GradientName);
+            _colormap.value = _colormap.options.FindIndex(
+                option => option.text == Settings.Instance.GradientName);
 
             // set measuring period and busyness multiplier values
             _measuringPeriod.text = Settings.Instance.MeasuringPeriod.ToString();
@@ -84,7 +85,8 @@ namespace Heatmap.UI
         public static void Destroy()
         {
             Log("Closing settings panel", LogLevel.Info);
-            UnityEngine.Object.Destroy(Instance._panel);
+            SettingsIO.Save(Settings.Instance);
+            Object.Destroy(Instance._panel);
         }
 
         public static void ToggleShow()

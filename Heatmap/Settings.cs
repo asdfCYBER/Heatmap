@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
-using Heatmap.UI;
+﻿using Newtonsoft.Json;
 
 namespace Heatmap
 {
@@ -14,7 +10,20 @@ namespace Heatmap
         public string GradientName { get; internal set; } = "cividis";
 
         [JsonIgnore]
-        public ColorGradient Gradient => ColorGradient.Gradients[GradientName];
+        public ColorGradient Gradient
+        {
+            get
+            {
+                if (ColorGradient.Gradients.ContainsKey(GradientName))
+                    return ColorGradient.Gradients[GradientName];
+                else
+                {
+                    // Loaded settings were nonsense, probably
+                    GradientName = "cividis";
+                    return ColorGradient.Cividis;
+                }
+            }
+        }
 
         public int MeasuringPeriod { get; internal set; } = 30;
 
@@ -30,7 +39,5 @@ namespace Heatmap
         }
         
         private Settings() { }
-
-        // TODO: IO
     }
 }

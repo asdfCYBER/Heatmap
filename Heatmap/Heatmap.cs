@@ -7,6 +7,7 @@ using Game.Mod;
 using Game.Railroad;
 using Game.Time;
 using HarmonyLib;
+using Heatmap.IO;
 using Heatmap.UI;
 using Utils;
 using UnityEngine;
@@ -43,6 +44,8 @@ namespace Heatmap
 
         public override async Task OnEnable()
         {
+            SettingsIO.Load();
+
             if (Instance != null)
                 Log("Heatmap was already instantiated!", LogLevel.Warning);
 

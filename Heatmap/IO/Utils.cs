@@ -11,13 +11,16 @@ namespace Heatmap.IO
         public const string SaveFolderName = "saves";
 
         /// <summary>
+        /// Returns the assembly directory path
+        /// </summary>
+        public static string GetAssemblyDirectory() =>
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        /// <summary>
         /// Returns the save directory path
         /// </summary>
-        public static string GetSavesDirectory()
-        {
-            string assembly = Assembly.GetExecutingAssembly().Location;
-            return Path.Combine(Path.GetDirectoryName(assembly), SaveFolderName);
-        }
+        public static string GetSavesDirectory() =>
+            Path.Combine(GetAssemblyDirectory(), SaveFolderName);
 
         /// <summary>
         /// Create a directory if it does not already exist
