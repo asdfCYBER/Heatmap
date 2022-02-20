@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using static Heatmap.Logging.Logging;
 
 namespace Heatmap
@@ -49,12 +49,14 @@ namespace Heatmap
         public int BusynessMaximum { get; internal set; } = 30;
 
         [JsonConstructor]
-        internal Settings(string gradientName, int measuringPeriod, int busynessMultiplier)
+        internal Settings(string gradientName, int? measuringPeriod,
+            int? busynessMinimum, int? busynessMaximum)
         {
             Instance = this;
-            GradientName = gradientName;
-            MeasuringPeriod = measuringPeriod;
-            BusynessMultiplier = busynessMultiplier;
+            if (!string.IsNullOrWhiteSpace(gradientName)) GradientName = gradientName;
+            if (measuringPeriod.HasValue) MeasuringPeriod = measuringPeriod.Value;
+            if (busynessMinimum.HasValue) BusynessMinimum = busynessMinimum.Value;
+            if (busynessMaximum.HasValue) BusynessMaximum = busynessMaximum.Value;
         }
         
         private Settings() { }
