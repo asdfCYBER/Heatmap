@@ -18,9 +18,8 @@ namespace Heatmap.Patches
         {
             if (ToolbarButton.Value && Heatmap.Instance.AllowOverlay)
             {
-                float busynessFraction = NodeTimerTracker.Instance.GetOccupiedTimeFraction(__instance.name);
-                busynessFraction *= 100 * Settings.Instance.BusynessMultiplier;
-                __result = Settings.Instance.Gradient.GetColor(busynessFraction);
+                float busynessFraction = NodeTimerTracker.Instance.GetBusynessFraction(__instance.name);
+                __result = Settings.Instance.Gradient.GetColor(100 * busynessFraction);
 
                 Log($"Node {__instance.name} now has color {__result}", LogLevel.Debug);
             }

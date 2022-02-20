@@ -40,7 +40,7 @@ namespace Heatmap
                     Log($"Found unregistered train on node {node.FriendlyName}, " +
                         "the node is now occupied", LogLevel.Warning);
                 else
-                    Log($"Registered: node {node.FriendlyName} is now occupied", LogLevel.Info);
+                    Log($"Registered: node {node.FriendlyName} is now occupied", LogLevel.Debug);
             }
         }
 
@@ -70,7 +70,7 @@ namespace Heatmap
                 NodeTimer nodeTimer = NodeTimers[node.Name].Single(timer => !timer.NodeIsCleared);
                 nodeTimer.TimeCleared = CurrentTime;
                 Log($"Registered: node {node.FriendlyName} is no longer occupied. " +
-                    $"The node was occupied for {nodeTimer.TimeElapsed}", LogLevel.Info);
+                    $"The node was occupied for {nodeTimer.TimeElapsed}", LogLevel.Debug);
             }
         }
 
@@ -89,10 +89,10 @@ namespace Heatmap
         }
 
         /// <summary>
-        /// Returns the amount of time the node was occupied in 
-        /// a certain total amount of time by that total amount
+        /// Return the amount of time the node with 
+        /// name <paramref name="nodename"/> was occupied in ticks
         /// </summary>
-        public float GetOccupiedTimeFraction(string nodename)
+        public long GetOccupiedTimeTicks(string nodename)
         {
             if (!NodeTimers.ContainsKey(nodename))
                 return 0;
@@ -100,19 +100,19 @@ namespace Heatmap
             // use data from the last MeasuringPeriod minutes
             TimeSpan measuringTime = TimeSpan.FromMinutes(Settings.Instance.MeasuringPeriod);
             TimeSpan measuringTimeStart = CurrentTime - measuringTime;
-            List<NodeTimer> deletableTimers = new List<NodeTimer>();
+            HashSet<NodeTimer> deletableTimers = new HashSet<NodeTimer>();
+
+            bool nodetimersDeleted = false;
 
             // The occupied time in milliseconds
-            double occupiedTime = 0;
+            long occupiedTime = 0;
             foreach (NodeTimer nodeTimer in NodeTimers[nodename])
             {
                 // if TimeOccupied was later than the start of the measuring
                 // period, the entire occupied time is measured
                 if (nodeTimer.TimeOccupied >= measuringTimeStart)
                 {
-                    occupiedTime += nodeTimer.TimeElapsed.TotalMilliseconds;
-                    Log($"Adding {occupiedTime} ms for timer entirely in " +
-                        $"the measuring period", LogLevel.Debug);
+                    occupiedTime += nodeTimer.TimeElapsed.Ticks;
                 }
                 // if TimeOccupied was before the start of the measuring period
                 // but TimeCleared after, the occupied time is partially counted
@@ -120,24 +120,55 @@ namespace Heatmap
                 {
                     // amount of time which falls outside of the measuring period
                     TimeSpan notmeasuredTime = measuringTimeStart - nodeTimer.TimeOccupied;
-                    occupiedTime += (nodeTimer.TimeElapsed - notmeasuredTime).TotalMilliseconds;
-                    Log($"Adding {occupiedTime} ms for timer partially in " +
-                        $"the measuring period", LogLevel.Debug);
+                    occupiedTime += (nodeTimer.TimeElapsed - notmeasuredTime).Ticks;
                 }
                 // if both TimeOccupied and TimeCleared occured before the
                 // measuring period started then the NodeTimer can be deleted
                 else
                 {
-                    Log($"Marked {nodeTimer} as deletable at time {CurrentTime}", LogLevel.Debug);
                     deletableTimers.Add(nodeTimer);
+                    nodetimersDeleted = true;
                 }
             }
 
-            NodeTimers[nodename].RemoveAll(timer => deletableTimers.Contains(timer));
+            if (nodetimersDeleted)
+                NodeTimers[nodename].RemoveAll(timer => deletableTimers.Contains(timer));
 
-            double fraction = occupiedTime / measuringTime.TotalMilliseconds;
-            Log($"Node {nodename} has a busyness factor of {fraction:P1}", LogLevel.Debug);
-            return (float)fraction;
+            return occupiedTime;
+        }
+
+        /// <summary>
+        /// Return the amount of time the node with 
+        /// name <paramref name="nodename"/> was occupied in minutes
+        /// </summary>
+        public float GetOccupiedTimeMinutes(string nodename)
+        {
+            // ticks to minutes: 10 million ticks in a second, 60 seconds in a minute
+            return GetOccupiedTimeTicks(nodename) / 6e8f;
+        }
+
+        /// <summary>
+        /// Return the busyness as a value between 0 and 1 where 0 is 
+        /// any value <= <see cref="Settings.BusynessMinimum"/> and 
+        /// 1 any value >= <see cref="Settings.BusynessMaximum"/>
+        /// </summary>
+        public float GetBusynessFraction(string nodename)
+        {
+            float minutes = GetOccupiedTimeMinutes(nodename);
+            float fraction;
+
+            if (minutes < Settings.Instance.BusynessMinimum) 
+                fraction = 0;
+            else if (minutes > Settings.Instance.BusynessMaximum) 
+                fraction = 1;
+            else
+            {
+                fraction = minutes - Settings.Instance.BusynessMinimum;
+                fraction /= (Settings.Instance.BusynessMaximum - Settings.Instance.BusynessMinimum);
+            }
+
+            Log($"Node {nodename} has a busyness fraction of {fraction:P1}", LogLevel.Debug);
+            return fraction;
         }
 
         // Hide the constructor, this class should not be instantiated twice

@@ -57,4 +57,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>echo F|xcopy $(TargetPath) "%25USERPROFILE%25/Documents/Heatmap UI/Heatmap UI/Assets/Plugins/$(TargetFileName)" /y</PostBuildEvent>
+  </PropertyGroup>
 </Project>

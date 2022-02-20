@@ -23,7 +23,9 @@ namespace Heatmap.UI
 
         private readonly TMP_InputField _measuringPeriod;
 
-        private readonly TMP_InputField _busynessMultiplier;
+        private readonly TMP_InputField _busynessMinimum;
+
+        private readonly TMP_InputField _busynessMaximum;
 
         public SettingsPanel(GameObject parent)
         {
@@ -31,10 +33,11 @@ namespace Heatmap.UI
             _panel = UnityEngine.Object.Instantiate(_prefab, parent.transform, worldPositionStays: false);
             SettingsPanelManager panelManager = _panel.GetComponent<SettingsPanelManager>();
             
-            _closeButton = panelManager.CloseButton.GetComponent<Button>();
-            _colormap = panelManager.ColormapDropdown.GetComponent<TMP_Dropdown>();
-            _measuringPeriod = panelManager.MeasuringPeriodInputField.GetComponent<TMP_InputField>();
-            _busynessMultiplier = panelManager.BusynessMultiplierInputField.GetComponent<TMP_InputField>();
+            _closeButton = panelManager.Close.GetComponent<Button>();
+            _colormap = panelManager.Colormap.GetComponent<TMP_Dropdown>();
+            _measuringPeriod = panelManager.MeasuringPeriod.GetComponent<TMP_InputField>();
+            _busynessMinimum = panelManager.BusynessMinimum.GetComponent<TMP_InputField>();
+            _busynessMaximum = panelManager.BusynessMaximum.GetComponent<TMP_InputField>();
 
             // Move the panel so it is next to the toolbar
             _panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(200, -180);
@@ -43,7 +46,8 @@ namespace Heatmap.UI
             _closeButton.onClick.AddListener(Destroy);
             _colormap.onValueChanged.AddListener(ColormapSelected);
             _measuringPeriod.onEndEdit.AddListener(MeasuringPeriodChanged);
-            _busynessMultiplier.onEndEdit.AddListener(BusynessMultiplierChanged);
+            _busynessMinimum.onEndEdit.AddListener(BusynessMinimumChanged);
+            _busynessMaximum.onEndEdit.AddListener(BusynessMaximumChanged);
 
             InitializeValues();
         }
@@ -73,7 +77,8 @@ namespace Heatmap.UI
 
             // set measuring period and busyness multiplier values
             _measuringPeriod.text = Settings.Instance.MeasuringPeriod.ToString();
-            _busynessMultiplier.text = Settings.Instance.BusynessMultiplier.ToString();
+            _busynessMinimum.text = Settings.Instance.BusynessMinimum.ToString();
+            _busynessMaximum.text = Settings.Instance.BusynessMaximum.ToString();
         }
 
         public static void Show()
@@ -115,13 +120,24 @@ namespace Heatmap.UI
             }
         }
 
-        private void BusynessMultiplierChanged(string value)
+        private void BusynessMinimumChanged(string value)
         {
-            Log($"Busyness multiplier changed to {value}", LogLevel.Info);
+            Log($"Busyness minimum changed to {value}", LogLevel.Info);
 
-            if (int.TryParse(Instance?._busynessMultiplier.text, out int result))
+            if (int.TryParse(Instance?._busynessMinimum.text, out int result))
             {
-                Settings.Instance.BusynessMultiplier = result;
+                Settings.Instance.BusynessMinimum = result;
+                Heatmap.Instance.RefreshAllNodes();
+            }
+        }
+
+        private void BusynessMaximumChanged(string value)
+        {
+            Log($"Busyness maximum changed to {value}", LogLevel.Info);
+
+            if (int.TryParse(Instance?._busynessMaximum.text, out int result))
+            {
+                Settings.Instance.BusynessMaximum = result;
                 Heatmap.Instance.RefreshAllNodes();
             }
         }

@@ -10,15 +10,18 @@ namespace Heatmap.Unity
     public class SettingsPanelManager : MonoBehaviour
     {
         [SerializeField]
-        public GameObject CloseButton;
+        public GameObject Close; // button
 
         [SerializeField]
-        public GameObject ColormapDropdown;
+        public GameObject Colormap; // dropdown
 
         [SerializeField]
-        public GameObject MeasuringPeriodInputField;
+        public GameObject MeasuringPeriod; // inputfield
 
         [SerializeField]
-        public GameObject BusynessMultiplierInputField;
+        public GameObject BusynessMinimum; // inputfield
+
+        [SerializeField]
+        public GameObject BusynessMaximum; // inputfield
     }
 }

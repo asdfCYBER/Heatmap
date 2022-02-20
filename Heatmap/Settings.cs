@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
+using static Heatmap.Logging.Logging;
 
 namespace Heatmap
 {
@@ -7,8 +8,14 @@ namespace Heatmap
         [JsonIgnore]
         public static Settings Instance { get; private set; } = new Settings();
 
+        /// <summary>
+        /// The name of the <see cref="ColorGradient"/> used for the heatmap
+        /// </summary>
         public string GradientName { get; internal set; } = "cividis";
 
+        /// <summary>
+        /// The <see cref="ColorGradient"/> used for the heatmap
+        /// </summary>
         [JsonIgnore]
         public ColorGradient Gradient
         {
@@ -25,9 +32,21 @@ namespace Heatmap
             }
         }
 
+        // TODO: add warning panel to confirm lower changes (and maybe settings in general?)
+        /// <summary>
+        /// The period (in minutes) used for calculating the heatmap data
+        /// </summary>
         public int MeasuringPeriod { get; internal set; } = 30;
 
-        public int BusynessMultiplier { get; internal set; } = 2;
+        /// <summary>
+        /// The amount of minutes that count as 0% in a gradient
+        /// </summary>
+        public int BusynessMinimum { get; internal set; } = 0;
+
+        /// <summary>
+        /// The amount of minutes that count as 100% in a gradient
+        /// </summary>
+        public int BusynessMaximum { get; internal set; } = 30;
 
         [JsonConstructor]
         internal Settings(string gradientName, int measuringPeriod, int busynessMultiplier)

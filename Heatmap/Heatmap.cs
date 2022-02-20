@@ -151,7 +151,7 @@ namespace Heatmap
                 _timerIteration = 0;
                 RefreshAllNodes();
                 Log($"Auto-refreshing all nodes at {DateTime.Now:HH:mm:ss} " +
-                    $"(in-game: {_timeController.CurrentTime})", LogLevel.Info);
+                    $"(in-game: {_timeController.CurrentTime})", LogLevel.Debug);
             }
         }
     }
