@@ -10,7 +10,7 @@ public class CreateAssetBundles
         EnsureDirectory(assetBundleDirectory);
 
         #region windows
-        string windowsPath = Path.Combine(assetBundleDirectory, "windows");
+        string windowsPath = assetBundleDirectory + "/windows";
         EnsureDirectory(windowsPath);
 
         BuildPipeline.BuildAssetBundles(
