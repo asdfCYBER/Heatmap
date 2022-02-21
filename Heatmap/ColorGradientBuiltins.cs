@@ -87,9 +87,5 @@ namespace Heatmap
         );
 
         #endregion
-
-
-
-
     }
 }
