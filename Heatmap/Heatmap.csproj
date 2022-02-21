@@ -101,6 +101,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="AutoRefreshTimer.cs" />
+    <Compile Include="UI\ConfirmDialog.cs" />
     <Compile Include="UI\SettingsPanel.cs" />
     <Compile Include="UI\ToolbarButton.cs" />
   </ItemGroup>

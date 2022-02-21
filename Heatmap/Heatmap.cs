@@ -19,6 +19,8 @@ namespace Heatmap
     {
         public static Heatmap Instance { get; private set; }
 
+        public static AssetBundle HeatmapUIAssets { get; } = LoadAssets();
+
         internal static IControllers _controller;
 
         internal static ITimeController _timeController;
@@ -153,6 +155,20 @@ namespace Heatmap
                 Log($"Auto-refreshing all nodes at {DateTime.Now:HH:mm:ss} " +
                     $"(in-game: {_timeController.CurrentTime})", LogLevel.Debug);
             }
+        }
+
+        private static AssetBundle LoadAssets()
+        {
+            // Load assets from file
+            AssetBundle assetBundle = IO.Utils.LoadAssetBundle("HeatmapUIassets");
+            if (assetBundle == null)
+            {
+                Log("The HeatmapUIassets file could not be loaded! " +
+                    "Settings will not be visible.", LogLevel.Exception);
+                return null;
+            }
+
+            return assetBundle;
         }
     }
 }

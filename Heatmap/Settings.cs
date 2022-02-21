@@ -48,15 +48,21 @@ namespace Heatmap
         /// </summary>
         public int BusynessMaximum { get; internal set; } = 30;
 
+        /// <summary>
+        /// The amount of minutes after which node data is deleted
+        /// </summary>
+        public int DeleteAfter { get; internal set; } = 30;
+
         [JsonConstructor]
         internal Settings(string gradientName, int? measuringPeriod,
-            int? busynessMinimum, int? busynessMaximum)
+            int? busynessMinimum, int? busynessMaximum, int? deleteAfter)
         {
             Instance = this;
             if (!string.IsNullOrWhiteSpace(gradientName)) GradientName = gradientName;
             if (measuringPeriod.HasValue) MeasuringPeriod = measuringPeriod.Value;
             if (busynessMinimum.HasValue) BusynessMinimum = busynessMinimum.Value;
             if (busynessMaximum.HasValue) BusynessMaximum = busynessMaximum.Value;
+            if (deleteAfter.HasValue) DeleteAfter = deleteAfter.Value;
         }
         
         private Settings() { }

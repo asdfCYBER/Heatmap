@@ -27,6 +27,12 @@ namespace Heatmap.UI
 
         private readonly TMP_InputField _busynessMaximum;
 
+        private readonly TMP_InputField _deleteAfter;
+
+        private string _prevDeleteAfterValue;
+
+        private int? _nextDeleteAfterValue;
+
         public SettingsPanel(GameObject parent)
         {
             // Instantiate prefab and find UI elements
@@ -38,6 +44,7 @@ namespace Heatmap.UI
             _measuringPeriod = panelManager.MeasuringPeriod.GetComponent<TMP_InputField>();
             _busynessMinimum = panelManager.BusynessMinimum.GetComponent<TMP_InputField>();
             _busynessMaximum = panelManager.BusynessMaximum.GetComponent<TMP_InputField>();
+            _deleteAfter = panelManager.DeleteAfter.GetComponent<TMP_InputField>();
 
             // Move the panel so it is next to the toolbar
             _panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(200, -180);
@@ -48,23 +55,20 @@ namespace Heatmap.UI
             _measuringPeriod.onEndEdit.AddListener(MeasuringPeriodChanged);
             _busynessMinimum.onEndEdit.AddListener(BusynessMinimumChanged);
             _busynessMaximum.onEndEdit.AddListener(BusynessMaximumChanged);
+            _deleteAfter.onSelect.AddListener(delegate (string value) { _prevDeleteAfterValue = value; });
+            _deleteAfter.onEndEdit.AddListener(DeleteAfterChanged);
 
             InitializeValues();
         }
 
         private static GameObject LoadPrefab()
         {
-            // Load assets from file
-            AssetBundle assetBundle = IO.Utils.LoadAssetBundle("HeatmapUIassets");
-            if (assetBundle == null)
-            {
-                Log("The HeatmapUIassets file could not be loaded! " +
-                    "Settings will not be visible.", LogLevel.Exception);
+            // Load assets from assetbundle
+            if (Heatmap.HeatmapUIAssets == null)
                 return null;
-            }
 
             // Load prefab from assets and return
-            return assetBundle.LoadAsset<GameObject>("Settings panel");
+            return Heatmap.HeatmapUIAssets.LoadAsset<GameObject>("Settings panel");
         }
 
         private void InitializeValues()
@@ -79,6 +83,7 @@ namespace Heatmap.UI
             _measuringPeriod.text = Settings.Instance.MeasuringPeriod.ToString();
             _busynessMinimum.text = Settings.Instance.BusynessMinimum.ToString();
             _busynessMaximum.text = Settings.Instance.BusynessMaximum.ToString();
+            _deleteAfter.text = Settings.Instance.DeleteAfter.ToString();
         }
 
         public static void Show()
@@ -104,42 +109,141 @@ namespace Heatmap.UI
 
         private void ColormapSelected(int index)
         {
-            Log($"Colormap {_colormap.options[index].text} selected", LogLevel.Info);
+            Log($"Colormap changed to {_colormap.options[index].text}", LogLevel.Info);
             Settings.Instance.GradientName = _colormap.options[index].text;
             Heatmap.Instance.RefreshAllNodes();
         }
 
         private void MeasuringPeriodChanged(string value)
         {
-            Log($"Measuring period changed to {value}", LogLevel.Info);
+            Log($"Measuring period changed to {value} minutes", LogLevel.Info);
 
-            if (int.TryParse(Instance?._measuringPeriod.text, out int result))
+            if (int.TryParse(_measuringPeriod.text, out int measureperiod)
+                && int.TryParse(_deleteAfter.text, out int deleteperiod))
             {
-                Settings.Instance.MeasuringPeriod = result;
+                // ensure that measureperiod <- deleteperiod
+                if (measureperiod > deleteperiod)
+                {
+                    measureperiod = deleteperiod;
+                    _measuringPeriod.text = measureperiod.ToString();
+                }
+                
+                Settings.Instance.MeasuringPeriod = measureperiod;
                 Heatmap.Instance.RefreshAllNodes();
             }
         }
 
         private void BusynessMinimumChanged(string value)
         {
-            Log($"Busyness minimum changed to {value}", LogLevel.Info);
+            Log($"Busyness minimum changed to {value} minutes", LogLevel.Info);
 
-            if (int.TryParse(Instance?._busynessMinimum.text, out int result))
+            if (int.TryParse(_busynessMinimum.text, out int min) 
+                && int.TryParse(_busynessMaximum.text, out int max))
             {
-                Settings.Instance.BusynessMinimum = result;
+                // ensure that min < max
+                if (min >= max)
+                {
+                    min = max - 1;
+                    _busynessMinimum.text = min.ToString();
+                }
+
+                Settings.Instance.BusynessMinimum = min;
                 Heatmap.Instance.RefreshAllNodes();
             }
         }
 
         private void BusynessMaximumChanged(string value)
         {
-            Log($"Busyness maximum changed to {value}", LogLevel.Info);
+            Log($"Busyness maximum changed to {value} minutes", LogLevel.Info);
 
-            if (int.TryParse(Instance?._busynessMaximum.text, out int result))
+            if (int.TryParse(_busynessMinimum.text, out int min)
+                && int.TryParse(_busynessMaximum.text, out int max))
             {
-                Settings.Instance.BusynessMaximum = result;
+                // ensure that min < max
+                if (max <= min)
+                {
+                    max = min + 1;
+                    _busynessMaximum.text = max.ToString();
+                }
+
+                Settings.Instance.BusynessMaximum = max;
                 Heatmap.Instance.RefreshAllNodes();
             }
+        }
+
+        private void DeleteAfterChanged(string value)
+        {
+            Log($"Delete after changed to {value} minutes", LogLevel.Info);
+
+            if (int.TryParse(_deleteAfter.text, out int result))
+            {
+                // Ask for confirmation if the deletion period should be sthorter
+                if (result < Settings.Instance.DeleteAfter)
+                {
+                    _nextDeleteAfterValue = result;
+
+                    new ConfirmDialog(_panel, new Vector2(610, 0), DeleteAfterChangedDialogResult, 
+                        "Confirm changes", "Are you sure you want to delete node data sooner?" +
+                        $" Any existing data older than {result} minutes will also be deleted.");
+
+                    DisableControls();
+                }
+                else
+                {
+                    Settings.Instance.DeleteAfter = result;
+                }
+                
+                Heatmap.Instance.RefreshAllNodes();
+            }
+        }
+
+        /// <summary>
+        /// Reset the DeleteAfter inputfield if changes were cancelled,
+        /// save the settings if it is confirmed
+        /// </summary>
+        /// <param name="result"></param>
+        private void DeleteAfterChangedDialogResult(DialogResult result)
+        {
+            Log($"Delete after changes confirmed: {result}", LogLevel.Info);
+            EnableControls();
+
+            if (result == DialogResult.Yes && _nextDeleteAfterValue.HasValue)
+            {
+                // ensure that measureperiod <= _nextDataAfterValue.Value
+                if (Settings.Instance.MeasuringPeriod > _nextDeleteAfterValue.Value)
+                {
+                    _measuringPeriod.text = _nextDeleteAfterValue.Value.ToString();
+                    Settings.Instance.MeasuringPeriod = _nextDeleteAfterValue.Value;
+                }
+
+                Settings.Instance.DeleteAfter = _nextDeleteAfterValue.Value;
+            }
+            else
+                _deleteAfter.text = _prevDeleteAfterValue;
+        }
+
+        /// <summary>
+        /// Disable all inputs on the settingspanel so that only the confirm dialog can be used
+        /// </summary>
+        public void DisableControls()
+        {
+            _colormap.enabled = false;
+            _measuringPeriod.enabled = false;
+            _busynessMinimum.enabled = false;
+            _busynessMaximum.enabled = false;
+            _deleteAfter.enabled = false;
+        }
+
+        /// <summary>
+        /// (Re-)enable all inputs on the settingspanel
+        /// </summary>
+        public void EnableControls()
+        {
+            _colormap.enabled = true;
+            _measuringPeriod.enabled = true;
+            _busynessMinimum.enabled = true;
+            _busynessMaximum.enabled = true;
+            _deleteAfter.enabled = true;
         }
     }
 }

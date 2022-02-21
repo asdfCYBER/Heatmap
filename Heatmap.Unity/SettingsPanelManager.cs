@@ -23,5 +23,8 @@ namespace Heatmap.Unity
 
         [SerializeField]
         public GameObject BusynessMaximum; // inputfield
+
+        [SerializeField]
+        public GameObject DeleteAfter; // inputfield
     }
 }
