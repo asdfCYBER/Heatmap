@@ -98,8 +98,8 @@ namespace Heatmap
                 return 0;
 
             // use data from the last MeasuringPeriod minutes
-            TimeSpan measuringTime = TimeSpan.FromMinutes(Settings.Instance.MeasuringPeriod);
-            TimeSpan measuringTimeStart = CurrentTime - measuringTime;
+            TimeSpan deletePeriodEnd = CurrentTime - TimeSpan.FromMinutes(Settings.Instance.DeleteAfter);
+            TimeSpan measuringTimeStart = CurrentTime - TimeSpan.FromMinutes(Settings.Instance.MeasuringPeriod);
             HashSet<NodeTimer> deletableTimers = new HashSet<NodeTimer>();
 
             bool nodetimersDeleted = false;
@@ -122,13 +122,15 @@ namespace Heatmap
                     TimeSpan notmeasuredTime = measuringTimeStart - nodeTimer.TimeOccupied;
                     occupiedTime += (nodeTimer.TimeElapsed - notmeasuredTime).Ticks;
                 }
-                // if both TimeOccupied and TimeCleared occured before the
-                // measuring period started then the NodeTimer can be deleted
-                else
+                // if both TimeOccupied and TimeCleared occured before the measuring period started
+                // and TimeOccupied is older than the deletion threshold then the timer can be deleted
+                else if (nodeTimer.TimeOccupied < deletePeriodEnd)
                 {
                     deletableTimers.Add(nodeTimer);
                     nodetimersDeleted = true;
                 }
+                // otherwise, nodeTimer.TimeCleared is between deletePeriodEnd
+                // and measuringTimeStart and nothing needs to happen
             }
 
             if (nodetimersDeleted)
