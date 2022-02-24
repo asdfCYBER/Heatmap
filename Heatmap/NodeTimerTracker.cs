@@ -173,6 +173,113 @@ namespace Heatmap
             return fraction;
         }
 
+        /// <summary>
+        /// Return the amount of valid timers on this node
+        /// </summary>
+        /// <param name="nodename"></param>
+        /// <returns></returns>
+        public int GetNodeTimerCount(string nodename)
+        {
+            if (!NodeTimers.ContainsKey(nodename))
+                return 0;
+
+            // Use data from the last MeasuringPeriod minutes
+            // using NodeTimers[nodename].Count() is insufficient because expired timers have to be deleted
+            TimeSpan deletePeriodEnd = CurrentTime - TimeSpan.FromMinutes(Settings.Instance.DeleteAfter);
+            TimeSpan measuringTimeStart = CurrentTime - TimeSpan.FromMinutes(Settings.Instance.MeasuringPeriod);
+            HashSet<NodeTimer> deletableTimers = new HashSet<NodeTimer>();
+
+            bool nodetimersDeleted = false;
+
+            // The amount of timers
+            int count = 0;
+            foreach (NodeTimer nodeTimer in NodeTimers[nodename])
+            {
+                // All timers that are still going or were cleared in the measuring range count
+                if (!nodeTimer.NodeIsCleared || nodeTimer.TimeCleared > measuringTimeStart)
+                {
+                    count++;
+                }
+                // If both TimeOccupied and TimeCleared occured before the measuring period started
+                // and TimeOccupied is older than the deletion threshold then the timer can be deleted
+                else if (nodeTimer.TimeOccupied < deletePeriodEnd)
+                {
+                    deletableTimers.Add(nodeTimer);
+                    nodetimersDeleted = true;
+                }
+                // Otherwise, nodeTimer.TimeCleared is between deletePeriodEnd
+                // and measuringTimeStart and nothing needs to happen
+            }
+
+            if (nodetimersDeleted)
+                NodeTimers[nodename].RemoveAll(timer => deletableTimers.Contains(timer));
+
+            return count;
+        }
+
+        /// <summary>
+        /// Get the average time spent in the node by dividing the total time by the amount of times.
+        /// More efficient than calling both GetOccupiedTimeTicks and GetNodeTimerCount
+        /// </summary>
+        /// <param name="nodename"></param>
+        /// <returns></returns>
+        public float GetAverageTimeTicks(string nodename)
+        {
+            if (!NodeTimers.ContainsKey(nodename))
+                return 0;
+
+            // use data from the last MeasuringPeriod minutes
+            TimeSpan deletePeriodEnd = CurrentTime - TimeSpan.FromMinutes(Settings.Instance.DeleteAfter);
+            TimeSpan measuringTimeStart = CurrentTime - TimeSpan.FromMinutes(Settings.Instance.MeasuringPeriod);
+            HashSet<NodeTimer> deletableTimers = new HashSet<NodeTimer>();
+
+            bool nodetimersDeleted = false;
+
+            // The occupied time in milliseconds
+            int count = 0;
+            long occupiedTime = 0;
+            foreach (NodeTimer nodeTimer in NodeTimers[nodename])
+            {
+                // if TimeOccupied was later than the start of the measuring
+                // period, the entire occupied time is measured
+                if (nodeTimer.TimeOccupied >= measuringTimeStart)
+                {
+                    count++;
+                    occupiedTime += nodeTimer.TimeElapsed.Ticks;
+                }
+                // if TimeOccupied was before the start of the measuring period
+                // but TimeCleared after, the occupied time is partially counted
+                else if (!nodeTimer.NodeIsCleared || nodeTimer.TimeCleared > measuringTimeStart)
+                {
+                    count++;
+
+                    // amount of time which falls outside of the measuring period
+                    TimeSpan notmeasuredTime = measuringTimeStart - nodeTimer.TimeOccupied;
+                    occupiedTime += (nodeTimer.TimeElapsed - notmeasuredTime).Ticks;
+                }
+                // if both TimeOccupied and TimeCleared occured before the measuring period started
+                // and TimeOccupied is older than the deletion threshold then the timer can be deleted
+                else if (nodeTimer.TimeOccupied < deletePeriodEnd)
+                {
+                    deletableTimers.Add(nodeTimer);
+                    nodetimersDeleted = true;
+                }
+                // otherwise, nodeTimer.TimeCleared is between deletePeriodEnd
+                // and measuringTimeStart and nothing needs to happen
+            }
+
+            if (nodetimersDeleted)
+                NodeTimers[nodename].RemoveAll(timer => deletableTimers.Contains(timer));
+
+            return (float)occupiedTime / count;
+        }
+
+        public float GetAverageTimeMinutes(string nodename)
+        {
+            // ticks to minutes: 10 million ticks in a second, 60 seconds in a minute
+            return GetAverageTimeTicks(nodename) / 6e8f;
+        }
+
         // Hide the constructor, this class should not be instantiated twice
         private NodeTimerTracker() { }
     }

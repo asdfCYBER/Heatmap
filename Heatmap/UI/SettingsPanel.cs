@@ -29,6 +29,8 @@ namespace Heatmap.UI
 
         private readonly TMP_InputField _deleteAfter;
 
+        private readonly TMP_Dropdown _mode;
+
         private string _prevDeleteAfterValue;
 
         private int? _nextDeleteAfterValue;
@@ -45,6 +47,7 @@ namespace Heatmap.UI
             _busynessMinimum = panelManager.BusynessMinimum.GetComponent<TMP_InputField>();
             _busynessMaximum = panelManager.BusynessMaximum.GetComponent<TMP_InputField>();
             _deleteAfter = panelManager.DeleteAfter.GetComponent<TMP_InputField>();
+            _mode = panelManager.Mode.GetComponent<TMP_Dropdown>();
 
             // Move the panel so it is next to the toolbar
             _panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(200, -180);
@@ -57,6 +60,7 @@ namespace Heatmap.UI
             _busynessMaximum.onEndEdit.AddListener(BusynessMaximumChanged);
             _deleteAfter.onSelect.AddListener(delegate (string value) { _prevDeleteAfterValue = value; });
             _deleteAfter.onEndEdit.AddListener(DeleteAfterChanged);
+            _mode.onValueChanged.AddListener(ModeSelected);
 
             InitializeValues();
         }
@@ -73,11 +77,17 @@ namespace Heatmap.UI
 
         private void InitializeValues()
         {
-            // add all registered gradients as options to the dropdown, and set cividis as default
+            // add all registered gradients as options to the dropdown
             _colormap.ClearOptions();
             _colormap.AddOptions(ColorGradient.Gradients.Keys.ToList());
             _colormap.value = _colormap.options.FindIndex(
                 option => option.text == Settings.Instance.GradientName);
+
+            // add all modes as options to the dropdown
+            _mode.ClearOptions();
+            _mode.AddOptions(Overlay.Modes.Keys.ToList());
+            _mode.value = _mode.options.FindIndex(
+                option => option.text == Settings.Instance.Mode);
 
             // set measuring period and busyness multiplier values
             _measuringPeriod.text = Settings.Instance.MeasuringPeriod.ToString();
@@ -244,6 +254,13 @@ namespace Heatmap.UI
             _busynessMinimum.enabled = true;
             _busynessMaximum.enabled = true;
             _deleteAfter.enabled = true;
+        }
+
+        private void ModeSelected(int index)
+        {
+            Log($"Colormap changed to {_mode.options[index].text}", LogLevel.Info);
+            Settings.Instance.Mode = _mode.options[index].text;
+            Heatmap.Instance.RefreshAllNodes();
         }
     }
 }

@@ -53,9 +53,14 @@ namespace Heatmap
         /// </summary>
         public int DeleteAfter { get; internal set; } = 30;
 
+        /// <summary>
+        /// How the tracks are colored
+        /// </summary>
+        public string Mode { get; internal set; } = "time spent";
+
         [JsonConstructor]
         internal Settings(string gradientName, int? measuringPeriod,
-            int? busynessMinimum, int? busynessMaximum, int? deleteAfter)
+            int? busynessMinimum, int? busynessMaximum, int? deleteAfter, string mode)
         {
             Instance = this;
             if (!string.IsNullOrWhiteSpace(gradientName)) GradientName = gradientName;
@@ -63,6 +68,7 @@ namespace Heatmap
             if (busynessMinimum.HasValue) BusynessMinimum = busynessMinimum.Value;
             if (busynessMaximum.HasValue) BusynessMaximum = busynessMaximum.Value;
             if (deleteAfter.HasValue) DeleteAfter = deleteAfter.Value;
+            if (!string.IsNullOrWhiteSpace(mode)) Mode = mode;
         }
         
         private Settings() { }
