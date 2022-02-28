@@ -155,6 +155,10 @@ namespace Heatmap
                 Log($"Auto-refreshing all nodes at {DateTime.Now:HH:mm:ss} " +
                     $"(in-game: {_timeController.CurrentTime})", LogLevel.Debug);
             }
+
+            // Update tooltips every second
+            if (Overlay.TooltipSubject != null)
+                Tooltip.UpdateText(Overlay.GetTooltipInfo());
         }
 
         private static AssetBundle LoadAssets()

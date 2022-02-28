@@ -94,6 +94,8 @@
     <Compile Include="Patches\ColorPatch.cs" />
     <Compile Include="Patches\DeletePatch.cs" />
     <Compile Include="Patches\LoadPatch.cs" />
+    <Compile Include="Patches\OnPointerExitPatch.cs" />
+    <Compile Include="Patches\OnPointerEnterPatch.cs" />
     <Compile Include="Patches\RenamePatch.cs" />
     <Compile Include="Patches\SavePatch.cs" />
     <Compile Include="Heatmap.cs" />
@@ -105,6 +107,7 @@
     <Compile Include="UI\ConfirmDialog.cs" />
     <Compile Include="UI\SettingsPanel.cs" />
     <Compile Include="UI\ToolbarButton.cs" />
+    <Compile Include="UI\Tooltip.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Heatmap.Unity\Heatmap.Unity.csproj">

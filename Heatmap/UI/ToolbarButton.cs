@@ -89,7 +89,7 @@ namespace Heatmap.UI
                 Object.Destroy(localize);
             
             // Change the tooltip
-            Tooltip tooltip = _button.GetComponentInParent<Tooltip>();
+            Game.Hud.Tooltip tooltip = _button.GetComponentInParent<Game.Hud.Tooltip>();
             tooltip.TooltipText = "Toggle heatmap";
             tooltip.Text = "Toggle heatmap";
             tooltip.LocalizedText = new LocalizedString();

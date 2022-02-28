@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3773718267
+CRC: 2720364463
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 752985db254616f23d659a3531e93667
+    Hash: 028447142b856c1800245ea7f322f6f6
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 8ce001b62315a40f84755dddab5c5769
+    Hash: 89ed094dca1bb991ce25b90aae87b384
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -40,6 +40,8 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 571414003, guid: cf0fb9256a5e0d84eb0315b9171adcd9, type: 3}
 - Class: 114
+  Script: {fileID: -146667771, guid: cf0fb9256a5e0d84eb0315b9171adcd9, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
@@ -69,6 +71,7 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
+- Assets/prefabs/Tooltip.prefab
 - Assets/prefabs/Confirm dialog.prefab
 - Assets/prefabs/Settings panel.prefab
 Dependencies: []

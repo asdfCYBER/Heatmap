@@ -271,7 +271,10 @@ namespace Heatmap
             if (nodetimersDeleted)
                 NodeTimers[nodename].RemoveAll(timer => deletableTimers.Contains(timer));
 
-            return (float)occupiedTime / count;
+            if (count == 0)
+                return 0;
+            else
+                return (float)occupiedTime / count;
         }
 
         public float GetAverageTimeMinutes(string nodename)

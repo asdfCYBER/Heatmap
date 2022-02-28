@@ -10,17 +10,14 @@ namespace Heatmap.Patches
     /// <summary>
     /// Patch the Game.BoardNode.CurrentColor property to allow overwriting BoardNode colors
     /// </summary>
-    [HarmonyPatch(typeof(BoardNode), "get_CurrentColor")]
-    internal class ColorPatch
+    [HarmonyPatch(typeof(BoardNode), "OnPointerExit")]
+    internal class OnPointerExitPatch
     {
         [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used by Harmony")]
-        private static void Postfix(BoardNode __instance, ref Color __result)
+        private static void Prefix(BoardNode __instance)
         {
             if (ToolbarButton.Value && Heatmap.Instance.AllowOverlay)
-            {
-                __result = Overlay.GetNodeColor(__instance, out _);
-                Log($"Node {__instance.name} now has color {__result}", LogLevel.Debug);
-            }
+                Tooltip.Hide();
         }
     }
 }

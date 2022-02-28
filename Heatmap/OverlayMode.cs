@@ -18,6 +18,8 @@ namespace Heatmap
 
     public static class Overlay
     {
+        internal static BoardNode TooltipSubject;
+
         /// <summary>
         /// Link between dropdown options and their enum representation
         /// </summary>
@@ -26,7 +28,7 @@ namespace Heatmap
             { "time spent", OverlayMode.TimeSpent },
             { "visits", OverlayMode.NumberOfVisits },
             { "max. speed", OverlayMode.MaximumVelocity },
-            { "avg. speed", OverlayMode.AverageVelocity },
+            //{ "avg. speed", OverlayMode.AverageVelocity },
             { "node length", OverlayMode.NodeLength },
             { "total visits", OverlayMode.TotalVisits }
         };
@@ -34,14 +36,13 @@ namespace Heatmap
         /// <summary>
         /// Get the color for the node, taking the current mode into account
         /// </summary>
-        public static Color GetNodeColor(BoardNode node)
+        public static Color GetNodeColor(BoardNode node, out float value)
         {
             int min = Settings.Instance.BusynessMinimum;
             int max = Settings.Instance.BusynessMaximum;
             ColorGradient gradient = Settings.Instance.Gradient;
             NodeTimerTracker tracker = NodeTimerTracker.Instance;
 
-            float value;
             switch (Modes[Settings.Instance.Mode])
             {
                 case OverlayMode.TimeSpent:
@@ -54,6 +55,7 @@ namespace Heatmap
                     value = tracker.GetNodeTimerCount(node.name);
                     break;
                 case OverlayMode.AverageVelocity:
+                    // TODO: account for train length because it's pretty unusable like this
                     float length = node.GetNodeForVisualState().Length / 1000f; // km
                     float averageTime = tracker.GetAverageTimeMinutes(node.name) / 60f; // hour
                     value = GetAverageVelocity(length, averageTime);
@@ -66,6 +68,7 @@ namespace Heatmap
                     break;
                 default:
                     Log($"Invalid mode when getting the color for node {node.name}", LogLevel.Exception);
+                    value = 0;
                     return Color.magenta; // obvious 'there's a bug' color
             }
 
@@ -79,6 +82,42 @@ namespace Heatmap
                 return 0;
 
             return length / time;
+        }
+
+        /// <summary>
+        /// Return information about the node <paramref name="node"/>
+        /// as a string to be displayed in a tooltip
+        /// </summary>
+        public static string GetTooltipInfo(BoardNode node)
+        {
+            TooltipSubject = node;
+
+            GetNodeColor(node, out float value);
+            string nodename = node.GetNodeForVisualState().FriendlyName;
+            string mode = Settings.Instance.Mode;
+
+            if (mode == "time spent")
+                return $"<b>{nodename}</b>\n{mode}: {value:F2} minutes";
+            else if (mode == "max. speed")
+                return $"<b>{nodename}</b>\n{mode}: {value:F0} km/h";
+            else if (mode == "avg. speed")
+                return $"<b>{nodename}</b>\n{mode}: {value} km/h";
+            else if (mode == "node length")
+                if (value < 1)
+                    return $"<b>{nodename}</b>\n{mode}: {value*1000:F0} m";
+                else
+                    return $"<b>{nodename}</b>\n{mode}: {value:F1} km";
+            else
+                return $"<b>{nodename}</b>\n{mode}: {value}";
+        }
+
+        /// <summary>
+        /// Return information about the last node
+        /// as a string to be displayed in a tooltip
+        /// </summary>
+        public static string GetTooltipInfo()
+        {
+            return GetTooltipInfo(TooltipSubject);
         }
     }
 }
