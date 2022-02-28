@@ -90,13 +90,18 @@ namespace Heatmap.UI
             
             // Change the tooltip
             Game.Hud.Tooltip tooltip = _button.GetComponentInParent<Game.Hud.Tooltip>();
-            tooltip.TooltipText = "Toggle heatmap";
-            tooltip.Text = "Toggle heatmap";
+            tooltip.TooltipText = "Toggle heatmap\nRight-click to show settings";
+            tooltip.Text = "Toggle heatmap\nRight-click to show settings";
             tooltip.LocalizedText = new LocalizedString();
 
             // Change the icon
             TextMeshProUGUI tmpComponent = _button.GetComponentInChildren<TextMeshProUGUI>();
             tmpComponent.text = "\uF7E4"; // fire-alt font awesome 5 icon
+
+            // Left-align tooltip text, do this last in case something breaks
+            if (tooltip?.HoverPanel?.Panel?.GetComponentInChildren<TMP_Text>() != null)
+                tooltip.HoverPanel.Panel.GetComponentInChildren<TMP_Text>().alignment = 
+                    TextAlignmentOptions.MidlineLeft;
         }
     }
 }
