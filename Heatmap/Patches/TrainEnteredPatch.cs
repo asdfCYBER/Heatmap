@@ -16,7 +16,7 @@ namespace Heatmap.Patches
         private static void Prefix(Train train, Node __instance)
         {
             Log($"Train with uuid {train.Uuid} has entered node {__instance.FriendlyName}", LogLevel.Debug);
-            NodeTimerTracker.Instance.RegisterNodeEntered(__instance);
+            NodeTimerTracker.Instance.RegisterNodeEntered(__instance, trainLength: (int)train.Length);
         }
     }
 }

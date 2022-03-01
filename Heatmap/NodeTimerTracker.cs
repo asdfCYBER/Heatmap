@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Game.Railroad;
+using Game;
 using Game.Train;
 using static Heatmap.Logging.Logging;
 
@@ -24,7 +25,7 @@ namespace Heatmap
         /// </summary>
         /// <param name="node">The node which has been entered</param>
         /// <param name="previouslyUnregisted">Whether a train was detected as entering</param>
-        public void RegisterNodeEntered(Node node, bool previouslyUnregisted = false)
+        public void RegisterNodeEntered(Node node, bool previouslyUnregistered = false, int trainLength = 0)
         {
             if (!NodeTimers.ContainsKey(node.Name))
             {
@@ -34,9 +35,9 @@ namespace Heatmap
             // if there is a NodeTime which has not been closed, don't add a new NodeTime
             if (!NodeTimers[node.Name].Any(timer => !timer.NodeIsCleared))
             {
-                NodeTimers[node.Name].Add(new NodeTimer(CurrentTime));
+                NodeTimers[node.Name].Add(new NodeTimer(CurrentTime, trainLength));
 
-                if (previouslyUnregisted)
+                if (previouslyUnregistered)
                     Log($"Found unregistered train on node {node.FriendlyName}, " +
                         "the node is now occupied", LogLevel.Warning);
                 else
@@ -83,7 +84,7 @@ namespace Heatmap
             {
                 foreach (Node node in train.OccupiedNodes)
                 {
-                    RegisterNodeEntered(node, true);
+                    RegisterNodeEntered(node, previouslyUnregistered: true);
                 }
             }
         }
@@ -124,7 +125,8 @@ namespace Heatmap
                 }
                 // if both TimeOccupied and TimeCleared occured before the measuring period started
                 // and TimeOccupied is older than the deletion threshold then the timer can be deleted
-                else if (nodeTimer.TimeOccupied < deletePeriodEnd)
+                else if (nodeTimer.TimeOccupied < deletePeriodEnd
+                    && nodeTimer.NodeIsCleared && nodeTimer.TimeCleared < measuringTimeStart)
                 {
                     deletableTimers.Add(nodeTimer);
                     nodetimersDeleted = true;
@@ -202,7 +204,8 @@ namespace Heatmap
                 }
                 // If both TimeOccupied and TimeCleared occured before the measuring period started
                 // and TimeOccupied is older than the deletion threshold then the timer can be deleted
-                else if (nodeTimer.TimeOccupied < deletePeriodEnd)
+                else if (nodeTimer.TimeOccupied < deletePeriodEnd
+                    && nodeTimer.NodeIsCleared && nodeTimer.TimeCleared < measuringTimeStart)
                 {
                     deletableTimers.Add(nodeTimer);
                     nodetimersDeleted = true;
@@ -218,14 +221,13 @@ namespace Heatmap
         }
 
         /// <summary>
-        /// Get the average time spent in the node by dividing the total time by the amount of times.
-        /// More efficient than calling both GetOccupiedTimeTicks and GetNodeTimerCount
+        /// Get the average velocity trains travel at in a node by dividing the node length plus 
+        /// train length by the time it took that train to exit the node, then taking the average.
         /// </summary>
-        /// <param name="nodename"></param>
-        /// <returns></returns>
-        public float GetAverageTimeTicks(string nodename)
+        /// <returns>Average velocity in km/h</returns>
+        public float GetAverageVelocity(BoardNode node)
         {
-            if (!NodeTimers.ContainsKey(nodename))
+            if (!NodeTimers.ContainsKey(node.name))
                 return 0;
 
             // use data from the last MeasuringPeriod minutes
@@ -237,50 +239,35 @@ namespace Heatmap
 
             // The occupied time in milliseconds
             int count = 0;
-            long occupiedTime = 0;
-            foreach (NodeTimer nodeTimer in NodeTimers[nodename])
-            {
-                // if TimeOccupied was later than the start of the measuring
-                // period, the entire occupied time is measured
-                if (nodeTimer.TimeOccupied >= measuringTimeStart)
-                {
-                    count++;
-                    occupiedTime += nodeTimer.TimeElapsed.Ticks;
-                }
-                // if TimeOccupied was before the start of the measuring period
-                // but TimeCleared after, the occupied time is partially counted
-                else if (!nodeTimer.NodeIsCleared || nodeTimer.TimeCleared > measuringTimeStart)
-                {
-                    count++;
+            float velocitySum = 0;
+            float nodelength = node.GetNodeForVisualState().Length;
 
-                    // amount of time which falls outside of the measuring period
-                    TimeSpan notmeasuredTime = measuringTimeStart - nodeTimer.TimeOccupied;
-                    occupiedTime += (nodeTimer.TimeElapsed - notmeasuredTime).Ticks;
+            foreach (NodeTimer nodeTimer in NodeTimers[node.name])
+            {
+                // Only count nodes that fall entirely in the measuring period
+                if (nodeTimer.NodeIsCleared && nodeTimer.TimeOccupied > measuringTimeStart)
+                {
+                    velocitySum += (nodelength + nodeTimer.TrainLength) / (float)nodeTimer.TimeElapsed.TotalSeconds;
+                    count += 1;
                 }
-                // if both TimeOccupied and TimeCleared occured before the measuring period started
+
+                // If both TimeOccupied and TimeCleared occured before the measuring period started
                 // and TimeOccupied is older than the deletion threshold then the timer can be deleted
-                else if (nodeTimer.TimeOccupied < deletePeriodEnd)
+                else if (nodeTimer.TimeOccupied < deletePeriodEnd
+                    && nodeTimer.NodeIsCleared && nodeTimer.TimeCleared < measuringTimeStart)
                 {
                     deletableTimers.Add(nodeTimer);
                     nodetimersDeleted = true;
                 }
-                // otherwise, nodeTimer.TimeCleared is between deletePeriodEnd
-                // and measuringTimeStart and nothing needs to happen
             }
 
             if (nodetimersDeleted)
-                NodeTimers[nodename].RemoveAll(timer => deletableTimers.Contains(timer));
+                NodeTimers[node.name].RemoveAll(timer => deletableTimers.Contains(timer));
 
             if (count == 0)
                 return 0;
             else
-                return (float)occupiedTime / count;
-        }
-
-        public float GetAverageTimeMinutes(string nodename)
-        {
-            // ticks to minutes: 10 million ticks in a second, 60 seconds in a minute
-            return GetAverageTimeTicks(nodename) / 6e8f;
+                return velocitySum / count * 3.6f; // average velocity, convert from m/s to km/h
         }
 
         // Hide the constructor, this class should not be instantiated twice

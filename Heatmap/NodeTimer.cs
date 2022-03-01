@@ -18,6 +18,12 @@ namespace Heatmap
         /// </summary>
         public TimeSpan TimeCleared { get; set; }
 
+        /// <summary>
+        /// Length of the train in the node, used for
+        /// calculating average velocity
+        /// </summary>
+        public int TrainLength { get; set; } = 0;
+
         [JsonIgnore]
         public bool NodeIsCleared => TimeCleared != TimeSpan.Zero;
 
@@ -43,17 +49,19 @@ namespace Heatmap
                 $"ended at {TimeCleared} (total time elapsed: {TimeElapsed})";
         }
 
-        public NodeTimer(TimeSpan timeOccupied)
+        public NodeTimer(TimeSpan timeOccupied, int trainLength)
         {
             TimeOccupied = timeOccupied;
             TimeCleared = TimeSpan.Zero;
+            TrainLength = trainLength;
         }
 
         [JsonConstructor]
-        public NodeTimer(TimeSpan timeOccupied, TimeSpan timeCleared)
+        public NodeTimer(TimeSpan timeOccupied, TimeSpan timeCleared, int trainLength)
         {
             TimeOccupied = timeOccupied;
             TimeCleared = timeCleared;
+            TrainLength = trainLength;
         }
     }
 }

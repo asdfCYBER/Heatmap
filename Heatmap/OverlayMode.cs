@@ -28,7 +28,7 @@ namespace Heatmap
             { "time spent", OverlayMode.TimeSpent },
             { "visits", OverlayMode.NumberOfVisits },
             { "max. speed", OverlayMode.MaximumVelocity },
-            //{ "avg. speed", OverlayMode.AverageVelocity },
+            { "avg. speed", OverlayMode.AverageVelocity },
             { "node length", OverlayMode.NodeLength },
             { "total visits", OverlayMode.TotalVisits }
         };
@@ -55,10 +55,7 @@ namespace Heatmap
                     value = tracker.GetNodeTimerCount(node.name);
                     break;
                 case OverlayMode.AverageVelocity:
-                    // TODO: account for train length because it's pretty unusable like this
-                    float length = node.GetNodeForVisualState().Length / 1000f; // km
-                    float averageTime = tracker.GetAverageTimeMinutes(node.name) / 60f; // hour
-                    value = GetAverageVelocity(length, averageTime);
+                    value = tracker.GetAverageVelocity(node);
                     break;
                 case OverlayMode.NodeLength:
                     value = node.GetNodeForVisualState().Length / 1000f; // km
@@ -74,14 +71,6 @@ namespace Heatmap
 
             float valueFraction = Mathf.Clamp01((value - min) / max);
             return gradient.GetColor(100 * valueFraction);
-        }
-
-        public static float GetAverageVelocity(float length, float time)
-        {
-            if (time == 0)
-                return 0;
-
-            return length / time;
         }
 
         /// <summary>
