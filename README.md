@@ -22,16 +22,23 @@ mods
 |   | - Heatmap.dll and other files
 ```
 
-You can uninstall the mod by deleting the Heatmap folder and its contents. This won't break your game or corrupt savegames.<br/><br/>
+You can uninstall the mod by deleting the Heatmap folder and its contents. This won't break your game or corrupt savegames. If you want to temporarily disable Heatmap without deleting anything for whatever reason, you can change the file extension of `Heatmap.dll` or move it somewhere else.<br/><br/>
 
 
 ## How to use
 When playing a timetable or endless map with the mod installed, you will see a new button with a fire icon in the toolbar on the left. If you click it, the tracks will be colored based on their busyness and a couple of settings. You can change the settings by right-clicking the button. These settings are currently implemented:
 
-- **Colormap:** the colormap used to color the tracks. You can find how they look on the [Matplotlib website](https://matplotlib.org/stable/tutorials/colors/colormaps.html#sequential) (except for the green-red and blue-red colormaps, but those should be self-explanatory). The default colormap is `cividis`.
-- **Measuring period:** this is the amount of minutes that Heatmap 'looks into the past' to determine the busyness. The default is `30`. Note that it takes the same amount of time to gather data, meaning that it takes 30 in-game minutes for an occupied track to reach 100% busyness for the default value. If you lower this value any older busyness data will be deleted, so be careful when adjusting it.
-- **Busyness value multiplier:** the busyness of a track will be multiplied by this number. This means that the maximum value of a colormap is reached more quickly. The default value is `2`, meaning that tracks which were occupied for 50% of the measuring period are colored as if they were occupied for 100% of the measuring period.<br/><br/>
+- **Mode:** which values will be used for the colors and tooltips. As of version 1.2.0, possible modes are *time spent* (the amount of time trains have been in the node within the measuring period), *max. speed* (the highest velocity allowed in the node), *avg. speed* (the average velocity of trains in the node), *node length*, *visits* (how often trains have been in the node within the measuring period) and *total visits* (how often trains have been in the node since the node was created).
+- **Colormap:** the colormap used to color the tracks. You can see what the colormaps look like on the [Matplotlib website](https://matplotlib.org/stable/tutorials/colors/colormaps.html#sequential) (except for the green-red and blue-red colormaps, but those should be self-explanatory).
+- **Measuring period:** the amount of minutes that Heatmap 'looks into the past' to determine the busyness. The default is 30. Note that it takes the same amount of time to gather data, meaning that it takes 30 in-game minutes for an occupied track to reach 100% busyness for the default value.
+- **Minimum value:** the value that will be given the lowest value color (color depends on the selected colormap).
+- **Maximum value:** the value that will be given the highest value color (color depends on the selected colormap). Cannot be lower than the minimum value.
+- **Delete data after:** the amount of minutes that gathered data will be retained. Default is 30 minutes, and it cannot be lower than the measuring period.
+
+
+When Heatmap is enabled, hovering over tracks will display a tooltip with the values used for generating the color of that track.<br/><br/>
+
 
 
 ## Reporting issues
-If you find a bug, please start a new GitHub issue or message me on the Rail Route discord. Don't forget to send your `Player.log` file! You can find it one folder up from the mod folder. A screenshot might be helpful too. If you think you found a bug in the game, first remove the mod to make sure it isn't actually a Heatmap issue.
+If you find a bug, please start a new GitHub issue or message me on the Rail Route discord. Don't forget to send your `Player.log` file! You can find it one folder up from the mod folder. A screenshot or savefile might be helpful too. If you think you found a bug in Rail Route and you're using Heatmap, first remove/disable the mod to make sure it isn't actually a Heatmap issue.
