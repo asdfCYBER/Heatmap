@@ -146,7 +146,7 @@ namespace Heatmap
             if (_timeController.TimeMultiplier == 5)
                 maxIteration = 3;
             else if (_timeController.TimeMultiplier == 1)
-                maxIteration = 15;
+                maxIteration = 5;
 
             if (_timerIteration >= maxIteration)
             {

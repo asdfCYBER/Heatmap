@@ -90,7 +90,7 @@ namespace Heatmap
             else if (mode == "max. speed")
                 return $"<b>{nodename}</b>\n{mode}: {value:F0} km/h";
             else if (mode == "avg. speed")
-                return $"<b>{nodename}</b>\n{mode}: {value} km/h";
+                return $"<b>{nodename}</b>\n{mode}: {value:F0} km/h";
             else if (mode == "node length")
                 if (value < 1)
                     return $"<b>{nodename}</b>\n{mode}: {value*1000:F0} m";
