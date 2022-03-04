@@ -19,7 +19,7 @@ namespace Heatmap.IO
             string directory = Utils.GetAssemblyDirectory();
             string path = Path.Combine(directory, Filename);
 
-            string contents = JsonConvert.SerializeObject(settings);
+            string contents = JsonConvert.SerializeObject(settings, Formatting.Indented);
             if (Utils.TrySaveToFile(path, contents))
                 Log($"Settings saved: {contents}", LogLevel.Info);
         }

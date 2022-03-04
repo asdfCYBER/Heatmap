@@ -82,12 +82,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Boundaries.cs" />
     <Compile Include="ColorGradient.cs" />
     <Compile Include="ColorGradientBuiltins.cs" />
     <Compile Include="IO\NodeTimerIO.cs" />
     <Compile Include="IO\SettingsIO.cs" />
     <Compile Include="IO\Utils.cs" />
     <Compile Include="Logging\Logging.cs" />
+    <Compile Include="ModeBoundaryValues.cs" />
     <Compile Include="NodeTimer.cs" />
     <Compile Include="NodeTimerTracker.cs" />
     <Compile Include="OverlayMode.cs" />

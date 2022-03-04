@@ -158,17 +158,18 @@ namespace Heatmap
         /// </summary>
         public float GetBusynessFraction(string nodename)
         {
+            Boundaries boundaries = Settings.Instance.BoundaryValues.GetCurrentBoundaries();
             float minutes = GetOccupiedTimeMinutes(nodename);
             float fraction;
 
-            if (minutes < Settings.Instance.BusynessMinimum) 
+            if (minutes < boundaries.Minimum) 
                 fraction = 0;
-            else if (minutes > Settings.Instance.BusynessMaximum) 
+            else if (minutes > boundaries.Maximum) 
                 fraction = 1;
             else
             {
-                fraction = minutes - Settings.Instance.BusynessMinimum;
-                fraction /= (Settings.Instance.BusynessMaximum - Settings.Instance.BusynessMinimum);
+                fraction = minutes - boundaries.Minimum;
+                fraction /= (boundaries.Maximum - boundaries.Minimum);
             }
 
             Log($"Node {nodename} has a busyness fraction of {fraction:P1}", LogLevel.Debug);

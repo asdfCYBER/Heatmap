@@ -38,8 +38,7 @@ namespace Heatmap
         /// </summary>
         public static Color GetNodeColor(BoardNode node, out float value)
         {
-            int min = Settings.Instance.BusynessMinimum;
-            int max = Settings.Instance.BusynessMaximum;
+            Boundaries boundaries = Settings.Instance.BoundaryValues.GetCurrentBoundaries();
             ColorGradient gradient = Settings.Instance.Gradient;
             NodeTimerTracker tracker = NodeTimerTracker.Instance;
 
@@ -69,7 +68,7 @@ namespace Heatmap
                     return Color.magenta; // obvious 'there's a bug' color
             }
 
-            float valueFraction = Mathf.Clamp01((value - min) / max);
+            float valueFraction = Mathf.Clamp01((value - boundaries.Minimum) / boundaries.Maximum);
             return gradient.GetColor(100 * valueFraction);
         }
 
@@ -107,6 +106,11 @@ namespace Heatmap
         public static string GetTooltipInfo()
         {
             return GetTooltipInfo(TooltipSubject);
+        }
+
+        public static OverlayMode GetCurrentMode()
+        {
+            return Modes[Settings.Instance.Mode];
         }
     }
 }

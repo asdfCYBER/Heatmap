@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using static Heatmap.Logging.Logging;
 
 namespace Heatmap
@@ -32,21 +33,15 @@ namespace Heatmap
             }
         }
 
-        // TODO: add warning panel to confirm lower changes (and maybe settings in general?)
         /// <summary>
         /// The period (in minutes) used for calculating the heatmap data
         /// </summary>
         public int MeasuringPeriod { get; internal set; } = 30;
 
         /// <summary>
-        /// The amount of minutes that count as 0% in a gradient
+        /// Minimum and maximum values for each mode
         /// </summary>
-        public int BusynessMinimum { get; internal set; } = 0;
-
-        /// <summary>
-        /// The amount of minutes that count as 100% in a gradient
-        /// </summary>
-        public int BusynessMaximum { get; internal set; } = 30;
+        public ModeBoundaryValues BoundaryValues { get; internal set; } = new ModeBoundaryValues();
 
         /// <summary>
         /// The amount of minutes after which node data is deleted
@@ -58,15 +53,15 @@ namespace Heatmap
         /// </summary>
         public string Mode { get; internal set; } = "time spent";
 
+
         [JsonConstructor]
         internal Settings(string gradientName, int? measuringPeriod,
-            int? busynessMinimum, int? busynessMaximum, int? deleteAfter, string mode)
+            ModeBoundaryValues boundaryValues, int? deleteAfter, string mode)
         {
             Instance = this;
             if (!string.IsNullOrWhiteSpace(gradientName)) GradientName = gradientName;
             if (measuringPeriod.HasValue) MeasuringPeriod = measuringPeriod.Value;
-            if (busynessMinimum.HasValue) BusynessMinimum = busynessMinimum.Value;
-            if (busynessMaximum.HasValue) BusynessMaximum = busynessMaximum.Value;
+            if (boundaryValues != null) BoundaryValues = boundaryValues;
             if (deleteAfter.HasValue) DeleteAfter = deleteAfter.Value;
             if (!string.IsNullOrWhiteSpace(mode)) Mode = mode;
         }

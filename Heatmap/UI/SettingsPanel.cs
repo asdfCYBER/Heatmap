@@ -90,9 +90,10 @@ namespace Heatmap.UI
                 option => option.text == Settings.Instance.Mode);
 
             // set measuring period and busyness multiplier values
+            Boundaries boundaries = Settings.Instance.BoundaryValues.GetCurrentBoundaries();
             _measuringPeriod.text = Settings.Instance.MeasuringPeriod.ToString();
-            _busynessMinimum.text = Settings.Instance.BusynessMinimum.ToString();
-            _busynessMaximum.text = Settings.Instance.BusynessMaximum.ToString();
+            _busynessMinimum.text = boundaries.Minimum.ToString();
+            _busynessMaximum.text = boundaries.Maximum.ToString();
             _deleteAfter.text = Settings.Instance.DeleteAfter.ToString();
         }
 
@@ -157,7 +158,7 @@ namespace Heatmap.UI
                     _busynessMinimum.text = min.ToString();
                 }
 
-                Settings.Instance.BusynessMinimum = min;
+                Settings.Instance.BoundaryValues.SetCurrentMinimum(min);
                 Heatmap.Instance.RefreshAllNodes();
             }
         }
@@ -176,7 +177,7 @@ namespace Heatmap.UI
                     _busynessMaximum.text = max.ToString();
                 }
 
-                Settings.Instance.BusynessMaximum = max;
+                Settings.Instance.BoundaryValues.SetCurrentMaximum(max);
                 Heatmap.Instance.RefreshAllNodes();
             }
         }
@@ -260,6 +261,9 @@ namespace Heatmap.UI
         {
             Log($"Colormap changed to {_mode.options[index].text}", LogLevel.Info);
             Settings.Instance.Mode = _mode.options[index].text;
+            Boundaries boundaries = Settings.Instance.BoundaryValues.GetCurrentBoundaries();
+            _busynessMinimum.text = boundaries.Minimum.ToString();
+            _busynessMaximum.text = boundaries.Maximum.ToString();
             Heatmap.Instance.RefreshAllNodes();
         }
     }
