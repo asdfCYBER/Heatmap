@@ -52,7 +52,7 @@ namespace Heatmap.Unity
             else if (mode.Contains("speed"))
                 unit = "km/h";
             else if (mode.Contains("length"))
-                unit = "km";
+                unit = "meters";
 
             MinimumUnit.GetComponent<TMP_Text>().text = unit;
             MaximumUnit.GetComponent<TMP_Text>().text = unit;

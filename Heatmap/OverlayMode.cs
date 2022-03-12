@@ -57,7 +57,7 @@ namespace Heatmap
                     value = tracker.GetAverageVelocity(node);
                     break;
                 case OverlayMode.NodeLength:
-                    value = node.GetNodeForVisualState().Length / 1000f; // km
+                    value = node.GetNodeForVisualState().Length; // m
                     break;
                 case OverlayMode.TotalVisits:
                     value = node.GetNodeForVisualState().UsageCount;
@@ -68,7 +68,7 @@ namespace Heatmap
                     return Color.magenta; // obvious 'there's a bug' color
             }
 
-            float valueFraction = Mathf.Clamp01((value - boundaries.Minimum) / boundaries.Maximum);
+            float valueFraction = Mathf.Clamp01((value - boundaries.Minimum) / (boundaries.Maximum - boundaries.Minimum));
             return gradient.GetColor(100 * valueFraction);
         }
 
