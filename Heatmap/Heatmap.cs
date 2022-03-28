@@ -74,7 +74,7 @@ namespace Heatmap
             Log("Mod has been disabled", LogLevel.Info);
 
             // Remove hooks and reset color
-            EventManager.StopListening(EventManager.LevelStarted, InitializeTracker);
+            _controller.EventManager.StopListening(_controller.EventManager.LevelStarted, InitializeTracker);
             _harmony.UnpatchAll(_id);
             RefreshAllNodes();
 
@@ -89,7 +89,7 @@ namespace Heatmap
             if (_controller.CurrentMode == GameMode.Play)
             {
                 AllowOverlay = true;
-                EventManager.StartListening(EventManager.LevelStarted, InitializeTracker);
+                _controller.EventManager.StartListening(_controller.EventManager.LevelStarted, InitializeTracker);
                 ToolbarButton.Show();
 
                 _timerObject = new GameObject("timer");
@@ -98,7 +98,7 @@ namespace Heatmap
             else
             {
                 AllowOverlay = false;
-                EventManager.StopListening(EventManager.LevelStarted, InitializeTracker);
+                _controller.EventManager.StopListening(_controller.EventManager.LevelStarted, InitializeTracker);
                 UnityEngine.Object.Destroy(_timerObject);
             }
 
