@@ -13,23 +13,11 @@ namespace Heatmap.UI
     {
         public static SettingsPanel Instance { get; private set; }
 
+        public SettingsPanelManager PanelManager { get; }
+
         private static readonly GameObject _prefab = LoadPrefab();
 
         private readonly GameObject _panel;
-
-        private readonly Button _closeButton;
-
-        private readonly TMP_Dropdown _colormap;
-
-        private readonly TMP_InputField _measuringPeriod;
-
-        private readonly TMP_InputField _busynessMinimum;
-
-        private readonly TMP_InputField _busynessMaximum;
-
-        private readonly TMP_InputField _deleteAfter;
-
-        private readonly TMP_Dropdown _mode;
 
         private string _prevDeleteAfterValue;
 
@@ -39,28 +27,20 @@ namespace Heatmap.UI
         {
             // Instantiate prefab and find UI elements
             _panel = UnityEngine.Object.Instantiate(_prefab, parent.transform, worldPositionStays: false);
-            SettingsPanelManager panelManager = _panel.GetComponent<SettingsPanelManager>();
-            
-            _closeButton = panelManager.Close.GetComponent<Button>();
-            _colormap = panelManager.Colormap.GetComponent<TMP_Dropdown>();
-            _measuringPeriod = panelManager.MeasuringPeriod.GetComponent<TMP_InputField>();
-            _busynessMinimum = panelManager.BusynessMinimum.GetComponent<TMP_InputField>();
-            _busynessMaximum = panelManager.BusynessMaximum.GetComponent<TMP_InputField>();
-            _deleteAfter = panelManager.DeleteAfter.GetComponent<TMP_InputField>();
-            _mode = panelManager.Mode.GetComponent<TMP_Dropdown>();
+            PanelManager = _panel.GetComponent<SettingsPanelManager>();
 
             // Move the panel so it is next to the toolbar
             _panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(200, -180);
 
             // Hook up events
-            _closeButton.onClick.AddListener(Destroy);
-            _colormap.onValueChanged.AddListener(ColormapSelected);
-            _measuringPeriod.onEndEdit.AddListener(MeasuringPeriodChanged);
-            _busynessMinimum.onEndEdit.AddListener(BusynessMinimumChanged);
-            _busynessMaximum.onEndEdit.AddListener(BusynessMaximumChanged);
-            _deleteAfter.onSelect.AddListener(delegate (string value) { _prevDeleteAfterValue = value; });
-            _deleteAfter.onEndEdit.AddListener(DeleteAfterChanged);
-            _mode.onValueChanged.AddListener(ModeSelected);
+            PanelManager.Close.onClick.AddListener(Destroy);
+            PanelManager.Colormap.onValueChanged.AddListener(ColormapSelected);
+            PanelManager.MeasuringPeriod.onEndEdit.AddListener(MeasuringPeriodChanged);
+            PanelManager.BusynessMinimum.onEndEdit.AddListener(BusynessMinimumChanged);
+            PanelManager.BusynessMaximum.onEndEdit.AddListener(BusynessMaximumChanged);
+            PanelManager.DeleteAfter.onSelect.AddListener(delegate (string value) { _prevDeleteAfterValue = value; });
+            PanelManager.DeleteAfter.onEndEdit.AddListener(DeleteAfterChanged);
+            PanelManager.Mode.onValueChanged.AddListener(ModeSelected);
 
             InitializeValues();
         }
@@ -78,23 +58,23 @@ namespace Heatmap.UI
         private void InitializeValues()
         {
             // add all registered gradients as options to the dropdown
-            _colormap.ClearOptions();
-            _colormap.AddOptions(ColorGradient.Gradients.Keys.ToList());
-            _colormap.value = _colormap.options.FindIndex(
+            PanelManager.Colormap.ClearOptions();
+            PanelManager.Colormap.AddOptions(ColorGradient.Gradients.Keys.ToList());
+            PanelManager.Colormap.value = PanelManager.Colormap.options.FindIndex(
                 option => option.text == Settings.Instance.GradientName);
 
             // add all modes as options to the dropdown
-            _mode.ClearOptions();
-            _mode.AddOptions(Overlay.Modes.Keys.ToList());
-            _mode.value = _mode.options.FindIndex(
+            PanelManager.Mode.ClearOptions();
+            PanelManager.Mode.AddOptions(Overlay.Modes.Keys.ToList());
+            PanelManager.Mode.value = PanelManager.Mode.options.FindIndex(
                 option => option.text == Settings.Instance.Mode);
 
             // set measuring period and busyness multiplier values
             Boundaries boundaries = Settings.Instance.BoundaryValues.GetCurrentBoundaries();
-            _measuringPeriod.text = Settings.Instance.MeasuringPeriod.ToString();
-            _busynessMinimum.text = boundaries.Minimum.ToString();
-            _busynessMaximum.text = boundaries.Maximum.ToString();
-            _deleteAfter.text = Settings.Instance.DeleteAfter.ToString();
+            PanelManager.MeasuringPeriod.text = Settings.Instance.MeasuringPeriod.ToString();
+            PanelManager.BusynessMinimum.text = boundaries.Minimum.ToString();
+            PanelManager.BusynessMaximum.text = boundaries.Maximum.ToString();
+            PanelManager.DeleteAfter.text = Settings.Instance.DeleteAfter.ToString();
         }
 
         public static void Show()
@@ -120,8 +100,8 @@ namespace Heatmap.UI
 
         private void ColormapSelected(int index)
         {
-            Log($"Colormap changed to {_colormap.options[index].text}", LogLevel.Info);
-            Settings.Instance.GradientName = _colormap.options[index].text;
+            Log($"Colormap changed to {PanelManager.Colormap.options[index].text}", LogLevel.Info);
+            Settings.Instance.GradientName = PanelManager.Colormap.options[index].text;
             Heatmap.Instance.RefreshAllNodes();
         }
 
@@ -129,14 +109,14 @@ namespace Heatmap.UI
         {
             Log($"Measuring period changed to {value} minutes", LogLevel.Info);
 
-            if (int.TryParse(_measuringPeriod.text, out int measureperiod)
-                && int.TryParse(_deleteAfter.text, out int deleteperiod))
+            if (int.TryParse(PanelManager.MeasuringPeriod.text, out int measureperiod)
+                && int.TryParse(PanelManager.DeleteAfter.text, out int deleteperiod))
             {
                 // ensure that measureperiod <- deleteperiod
                 if (measureperiod > deleteperiod)
                 {
                     measureperiod = deleteperiod;
-                    _measuringPeriod.text = measureperiod.ToString();
+                    PanelManager.MeasuringPeriod.text = measureperiod.ToString();
                 }
                 
                 Settings.Instance.MeasuringPeriod = measureperiod;
@@ -148,14 +128,14 @@ namespace Heatmap.UI
         {
             Log($"Busyness minimum changed to {value} minutes", LogLevel.Info);
 
-            if (int.TryParse(_busynessMinimum.text, out int min) 
-                && int.TryParse(_busynessMaximum.text, out int max))
+            if (int.TryParse(PanelManager.BusynessMinimum.text, out int min) 
+                && int.TryParse(PanelManager.BusynessMaximum.text, out int max))
             {
                 // ensure that min < max
                 if (min >= max)
                 {
                     min = max - 1;
-                    _busynessMinimum.text = min.ToString();
+                    PanelManager.BusynessMinimum.text = min.ToString();
                 }
 
                 Settings.Instance.BoundaryValues.SetCurrentMinimum(min);
@@ -167,14 +147,14 @@ namespace Heatmap.UI
         {
             Log($"Busyness maximum changed to {value} minutes", LogLevel.Info);
 
-            if (int.TryParse(_busynessMinimum.text, out int min)
-                && int.TryParse(_busynessMaximum.text, out int max))
+            if (int.TryParse(PanelManager.BusynessMinimum.text, out int min)
+                && int.TryParse(PanelManager.BusynessMaximum.text, out int max))
             {
                 // ensure that min < max
                 if (max <= min)
                 {
                     max = min + 1;
-                    _busynessMaximum.text = max.ToString();
+                    PanelManager.BusynessMaximum.text = max.ToString();
                 }
 
                 Settings.Instance.BoundaryValues.SetCurrentMaximum(max);
@@ -186,7 +166,7 @@ namespace Heatmap.UI
         {
             Log($"Delete after changed to {value} minutes", LogLevel.Info);
 
-            if (int.TryParse(_deleteAfter.text, out int result))
+            if (int.TryParse(PanelManager.DeleteAfter.text, out int result))
             {
                 // Ask for confirmation if the deletion period should be sthorter
                 if (result < Settings.Instance.DeleteAfter)
@@ -223,14 +203,14 @@ namespace Heatmap.UI
                 // ensure that measureperiod <= _nextDataAfterValue.Value
                 if (Settings.Instance.MeasuringPeriod > _nextDeleteAfterValue.Value)
                 {
-                    _measuringPeriod.text = _nextDeleteAfterValue.Value.ToString();
+                    PanelManager.MeasuringPeriod.text = _nextDeleteAfterValue.Value.ToString();
                     Settings.Instance.MeasuringPeriod = _nextDeleteAfterValue.Value;
                 }
 
                 Settings.Instance.DeleteAfter = _nextDeleteAfterValue.Value;
             }
             else
-                _deleteAfter.text = _prevDeleteAfterValue;
+                PanelManager.DeleteAfter.text = _prevDeleteAfterValue;
         }
 
         /// <summary>
@@ -238,11 +218,11 @@ namespace Heatmap.UI
         /// </summary>
         public void DisableControls()
         {
-            _colormap.enabled = false;
-            _measuringPeriod.enabled = false;
-            _busynessMinimum.enabled = false;
-            _busynessMaximum.enabled = false;
-            _deleteAfter.enabled = false;
+            PanelManager.Colormap.enabled = false;
+            PanelManager.MeasuringPeriod.enabled = false;
+            PanelManager.BusynessMinimum.enabled = false;
+            PanelManager.BusynessMaximum.enabled = false;
+            PanelManager.DeleteAfter.enabled = false;
         }
 
         /// <summary>
@@ -250,20 +230,20 @@ namespace Heatmap.UI
         /// </summary>
         public void EnableControls()
         {
-            _colormap.enabled = true;
-            _measuringPeriod.enabled = true;
-            _busynessMinimum.enabled = true;
-            _busynessMaximum.enabled = true;
-            _deleteAfter.enabled = true;
+            PanelManager.Colormap.enabled = true;
+            PanelManager.MeasuringPeriod.enabled = true;
+            PanelManager.BusynessMinimum.enabled = true;
+            PanelManager.BusynessMaximum.enabled = true;
+            PanelManager.DeleteAfter.enabled = true;
         }
 
         private void ModeSelected(int index)
         {
-            Log($"Colormap changed to {_mode.options[index].text}", LogLevel.Info);
-            Settings.Instance.Mode = _mode.options[index].text;
+            Log($"Colormap changed to {PanelManager.Mode.options[index].text}", LogLevel.Info);
+            Settings.Instance.Mode = PanelManager.Mode.options[index].text;
             Boundaries boundaries = Settings.Instance.BoundaryValues.GetCurrentBoundaries();
-            _busynessMinimum.text = boundaries.Minimum.ToString();
-            _busynessMaximum.text = boundaries.Maximum.ToString();
+            PanelManager.BusynessMinimum.text = boundaries.Minimum.ToString();
+            PanelManager.BusynessMaximum.text = boundaries.Maximum.ToString();
             Heatmap.Instance.RefreshAllNodes();
         }
     }

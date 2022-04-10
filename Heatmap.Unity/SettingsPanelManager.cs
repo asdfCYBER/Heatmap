@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 namespace Heatmap.Unity
@@ -11,38 +12,38 @@ namespace Heatmap.Unity
     public class SettingsPanelManager : MonoBehaviour
     {
         [SerializeField]
-        public GameObject Close; // button
+        public Button Close;
 
         [SerializeField]
-        public GameObject Colormap; // dropdown
+        public TMP_Dropdown Colormap;
 
         [SerializeField]
-        public GameObject MeasuringPeriod; // inputfield
+        public TMP_InputField MeasuringPeriod;
 
         [SerializeField]
-        public GameObject BusynessMinimum; // inputfield
+        public TMP_InputField BusynessMinimum;
 
         [SerializeField]
-        public GameObject BusynessMaximum; // inputfield
+        public TMP_InputField BusynessMaximum;
 
         [SerializeField]
-        public GameObject DeleteAfter; // inputfield
+        public TMP_InputField DeleteAfter;
 
         [SerializeField]
-        public GameObject Mode; // dropdown
+        public TMP_Dropdown Mode;
 
         [SerializeField]
-        public GameObject MinimumUnit; // label
+        public TMP_Text MinimumUnit; // label
 
         [SerializeField]
-        public GameObject MaximumUnit; // label
+        public TMP_Text MaximumUnit; // label
 
         /// <summary>
         /// Set the correct units (minutes, km/h, etc) for the current mode
         /// </summary>
         public void ModeChanged(int value)
         {
-            string mode = Mode.GetComponent<TMP_Dropdown>().options[value].text.ToLower();
+            string mode = Mode.options[value].text.ToLower();
             string unit = "<color=\"red\">error</color>";
 
             if (mode.Contains("time"))
@@ -54,11 +55,11 @@ namespace Heatmap.Unity
             else if (mode.Contains("length"))
                 unit = "meters";
 
-            MinimumUnit.GetComponent<TMP_Text>().text = unit;
-            MaximumUnit.GetComponent<TMP_Text>().text = unit;
+            MinimumUnit.text = unit;
+            MaximumUnit.text = unit;
         }
 
         public void UpdateUnits() =>
-            ModeChanged(Mode.GetComponent<TMP_Dropdown>().value);
+            ModeChanged(Mode.value);
     }
 }

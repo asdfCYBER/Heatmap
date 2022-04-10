@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 namespace Heatmap.Unity
 {
@@ -10,18 +12,18 @@ namespace Heatmap.Unity
     public class DialogConfirmManager : MonoBehaviour
     {
         [SerializeField]
-        public GameObject Title; // text
+        public TMP_Text Title;
 
         [SerializeField]
-        public GameObject Text; // text
+        public TMP_Text Text;
 
         [SerializeField]
-        public GameObject Cancel; // button
+        public Button Cancel;
 
         [SerializeField]
-        public GameObject Yes; // button
+        public Button Yes;
 
         [SerializeField]
-        public GameObject No; // button
+        public Button No;
     }
 }
