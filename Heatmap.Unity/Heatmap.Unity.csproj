@@ -60,6 +60,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DialogConfirmManager.cs" />
+    <Compile Include="GradientItem.cs" />
+    <Compile Include="GradientManager.cs" />
     <Compile Include="SettingsPanelManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TooltipManager.cs" />

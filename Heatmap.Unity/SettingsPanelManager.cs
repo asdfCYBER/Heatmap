@@ -11,32 +11,36 @@ namespace Heatmap.Unity
     [RequireComponent(typeof(RectTransform))]
     public class SettingsPanelManager : MonoBehaviour
     {
-        [SerializeField]
         public Button Close;
 
-        [SerializeField]
+        public Color ToggleOff;
+
+        public Color ToggleOn;
+
+        public Toggle ShowCustomColormap;
+
+        public GameObject CustomColormap;
+
         public TMP_Dropdown Colormap;
 
-        [SerializeField]
         public TMP_InputField MeasuringPeriod;
 
-        [SerializeField]
         public TMP_InputField BusynessMinimum;
 
-        [SerializeField]
         public TMP_InputField BusynessMaximum;
 
-        [SerializeField]
         public TMP_InputField DeleteAfter;
 
-        [SerializeField]
         public TMP_Dropdown Mode;
 
-        [SerializeField]
         public TMP_Text MinimumUnit; // label
 
-        [SerializeField]
         public TMP_Text MaximumUnit; // label
+
+        public void Awake()
+        {
+            ShowCustomColormap.onValueChanged.AddListener(ToggleCustomColormap);
+        }
 
         /// <summary>
         /// Set the correct units (minutes, km/h, etc) for the current mode
@@ -61,5 +65,17 @@ namespace Heatmap.Unity
 
         public void UpdateUnits() =>
             ModeChanged(Mode.value);
+
+        /// <summary>
+        /// Toggle the custom color panel, update the toggle color
+        /// </summary>
+        public void ToggleCustomColormap(bool show)
+        {
+            CustomColormap.SetActive(show);
+
+            ColorBlock colors = ShowCustomColormap.colors;
+            colors.normalColor = colors.selectedColor = show ? ToggleOn : ToggleOff;
+            ShowCustomColormap.colors = colors;
+        }
     }
 }
