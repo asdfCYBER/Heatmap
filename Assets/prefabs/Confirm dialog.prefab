@@ -973,11 +973,11 @@ MonoBehaviour:
   m_Script: {fileID: 2036233514, guid: cf0fb9256a5e0d84eb0315b9171adcd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Title: {fileID: 7389307288840466669}
-  Text: {fileID: 7389307289015355556}
-  Cancel: {fileID: 7389307288559642462}
-  Yes: {fileID: 7389307288546554185}
-  No: {fileID: 8914690897758006099}
+  Title: {fileID: 7389307288840466667}
+  Text: {fileID: 7389307289015355555}
+  Cancel: {fileID: 7389307288559642461}
+  Yes: {fileID: 7389307288546554183}
+  No: {fileID: 7833914394887109192}
 --- !u!1 &7389307289348412708
 GameObject:
   m_ObjectHideFlags: 0
