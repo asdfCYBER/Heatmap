@@ -29,6 +29,16 @@ namespace Heatmap.Unity
 
         public Button MoveUp;
 
+        private bool _updateNeeded = false;
+
+        private bool _updateNextUpdate = false;
+
+        private Gradient _updateGradient;
+
+        private string _updateName;
+
+        private const int _maxKeys = 8;
+
         public void Awake()
         {
             Add.onClick.AddListener(OnClickAdd);
@@ -36,6 +46,57 @@ namespace Heatmap.Unity
             MoveUp.onClick.AddListener(OnClickMoveUp);
             MoveDown.onClick.AddListener(OnClickMoveDown);
             Delete.onClick.AddListener(RemoveItems);
+        }
+
+        public void Update()
+        {
+            // Mechanism to load the gradient two updates after _updateNeeded has been set to true
+            if (_updateNextUpdate)
+                Load();
+            else if (_updateNeeded)
+                _updateNextUpdate = true;
+
+            UpdateButtons();
+        }
+
+        /// <summary>
+        /// Update which buttons are interactable
+        /// </summary>
+        private void UpdateButtons()
+        {
+            // Enable or disable buttons
+            int childCount = Items.content.childCount;
+            int? index = GetLastSelectedItem()?.transform?.GetSiblingIndex();
+            Add.interactable = childCount < _maxKeys;
+            Remove.interactable = index.HasValue ? childCount > 0 : false;
+            MoveUp.interactable = index.HasValue ? index > 0 : false;
+            MoveDown.interactable = index.HasValue ? index < childCount - 1 : false;
+        }
+
+        /// <summary>
+        /// Load <see cref="_updateGradient"/> with name <see cref="_updateName"/>
+        /// </summary>
+        private void Load()
+        {
+            foreach (GradientColorKey key in _updateGradient.colorKeys)
+                ManualAdd((float)Math.Round(key.time * 100, 1), key.color);
+
+            _updateNeeded = false;
+            _updateNextUpdate = false;
+            Name.text = _updateName;
+            Name.onEndEdit.Invoke(_updateName);
+        }
+
+        /// <summary>
+        /// Load <paramref name="gradient"/> (called <paramref name="name"/>) on the update after the next update
+        /// </summary>
+        public void Load(Gradient gradient, string name)
+        {
+            // Reset the gradient panel and set the update fields (used on the next update)
+            RemoveItems();
+            _updateName = name;
+            _updateGradient = gradient;
+            _updateNeeded = true;
         }
 
         /// <summary>
@@ -96,6 +157,22 @@ namespace Heatmap.Unity
 
             texture.Apply();
             GradientPreview.texture = texture;
+        }
+
+        /// <summary>
+        /// Duplicate the template and edit the new object immediately
+        /// </summary>
+        private void ManualAdd(float key, Color color)
+        {
+            GameObject newItem = GameObject.Instantiate(Template, Items.content, worldPositionStays: false);
+            GradientItem gradientItem = newItem.GetComponent<GradientItem>();
+
+            gradientItem.KeyInput.text = key.ToString();
+            gradientItem.OnKeyChange(gradientItem.KeyInput.text);
+            gradientItem.HexInput.text = ColorUtility.ToHtmlStringRGB(color);
+            gradientItem.OnHexChange(gradientItem.HexInput.text);
+
+            newItem.SetActive(true);
         }
 
         /// <summary>
@@ -197,10 +274,16 @@ namespace Heatmap.Unity
         /// </summary>
         public void RemoveItems()
         {
-            Name.text = "";
-
-            for (int i = 0; i < Items.content.childCount; i++)
-                Destroy(Items.content.GetChild(i));
+            for (int i = Items.content.childCount - 1; i >= 0; i--)
+                Destroy(Items.content.GetChild(i).gameObject);
         }
+
+        public void ToggleSaveDelete(bool enableSave, bool enableDelete)
+        {
+            Save.interactable = enableSave;
+            Delete.interactable = enableDelete;
+        }
+
+        public void ToggleSaveDelete(bool enable) => ToggleSaveDelete(enable, enable);
     }
 }

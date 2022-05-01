@@ -69,7 +69,7 @@ namespace Heatmap
             }
 
             float valueFraction = Mathf.Clamp01((value - boundaries.Minimum) / (boundaries.Maximum - boundaries.Minimum));
-            return gradient.GetColor(100 * valueFraction);
+            return gradient.GetColor(valueFraction);
         }
 
         /// <summary>

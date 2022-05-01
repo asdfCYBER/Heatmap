@@ -10,13 +10,15 @@ namespace Heatmap
         // These use predefined UnityEngine.Color values
 
         public static ColorGradient GreenRed { get; } = new ColorGradient(
-            "green-red",
+            name: "green-red",
+            editable: false,
             Color.green,
             Color.red
         );
 
         public static ColorGradient BlueRed { get; } = new ColorGradient(
-            "blue-red",
+            name: "blue-red",
+            editable: false,
             Color.blue,
             Color.red
         );
@@ -27,7 +29,8 @@ namespace Heatmap
         // Generated from Matplotlib colormaps with Tools/colorgradient_generator.py
 
         public static ColorGradient Viridis { get; } = new ColorGradient(
-            "viridis",
+            name: "viridis",
+            editable: false,
             new Color(0.267004f, 0.004874f, 0.329415f),
             new Color(0.275191f, 0.194905f, 0.496005f),
             new Color(0.212395f, 0.359683f, 0.551710f),
@@ -39,7 +42,8 @@ namespace Heatmap
         );
 
         public static ColorGradient Cividis { get; } = new ColorGradient(
-            "cividis",
+            name: "cividis",
+            editable: false,
             new Color(0.000000f, 0.135112f, 0.304751f),
             new Color(0.130669f, 0.231458f, 0.432840f),
             new Color(0.298421f, 0.332247f, 0.423973f),
@@ -51,7 +55,8 @@ namespace Heatmap
         );
 
         public static ColorGradient Plasma { get; } = new ColorGradient(
-            "plasma",
+            name: "plasma",
+            editable: false,
             new Color(0.050383f, 0.029803f, 0.527975f),
             new Color(0.325150f, 0.006915f, 0.639512f),
             new Color(0.546157f, 0.038954f, 0.647010f),
@@ -63,7 +68,8 @@ namespace Heatmap
         );
 
         public static ColorGradient Inferno { get; } = new ColorGradient(
-            "inferno",
+            name: "inferno",
+            editable: false,
             new Color(0.001462f, 0.000466f, 0.013866f),
             new Color(0.155850f, 0.044559f, 0.325338f),
             new Color(0.397674f, 0.083257f, 0.433183f),
@@ -75,7 +81,8 @@ namespace Heatmap
         );
 
         public static ColorGradient Magma { get; } = new ColorGradient(
-            "magma",
+            name: "magma",
+            editable: false,
             new Color(0.001462f, 0.000466f, 0.013866f),
             new Color(0.135053f, 0.068391f, 0.315000f),
             new Color(0.372116f, 0.092816f, 0.499053f),

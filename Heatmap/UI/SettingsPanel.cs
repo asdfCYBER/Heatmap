@@ -1,10 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Game;
 using Heatmap.IO;
 using Heatmap.Unity;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using static Heatmap.Logging.Logging;
 
 namespace Heatmap.UI
@@ -41,6 +40,10 @@ namespace Heatmap.UI
             PanelManager.DeleteAfter.onSelect.AddListener(delegate (string value) { _prevDeleteAfterValue = value; });
             PanelManager.DeleteAfter.onEndEdit.AddListener(DeleteAfterChanged);
             PanelManager.Mode.onValueChanged.AddListener(ModeSelected);
+
+            PanelManager.ColormapManager.Name.onEndEdit.AddListener(VerifyColormapName);
+            PanelManager.ColormapManager.Delete.onClick.AddListener(DeleteColormapOption);
+            PanelManager.ColormapManager.Save.onClick.AddListener(AddColormapOption);
 
             InitializeValues();
         }
@@ -102,6 +105,7 @@ namespace Heatmap.UI
         {
             Log($"Colormap changed to {PanelManager.Colormap.options[index].text}", LogLevel.Info);
             Settings.Instance.GradientName = PanelManager.Colormap.options[index].text;
+            PanelManager.ColormapManager.Load(Settings.Instance.Gradient.Gradient, Settings.Instance.GradientName);
             Heatmap.Instance.RefreshAllNodes();
         }
 
@@ -245,6 +249,64 @@ namespace Heatmap.UI
             PanelManager.BusynessMinimum.text = boundaries.Minimum.ToString();
             PanelManager.BusynessMaximum.text = boundaries.Maximum.ToString();
             Heatmap.Instance.RefreshAllNodes();
+        }
+
+        /// <summary>
+        /// Remove a colormap with the same name as in the custom colormap name inputfield from the dropdown
+        /// </summary>
+        public void DeleteColormapOption()
+        {
+            string name = PanelManager.ColormapManager.Name.text;
+
+            // Set the selected colormap to one of the first option (a built-in colormap)
+            // if the currently selected colormap is the one that has to be removed
+            if (PanelManager.Colormap.options[PanelManager.Colormap.value].text == name) // TODO: colormap.captiontext?
+                PanelManager.Colormap.value = PanelManager.Colormap.options.FindIndex(option => option.text == "cividis");
+
+            int amount = PanelManager.Colormap.options.RemoveAll(option => option.text == name);
+            Log($"Removed {amount} colormap with the name {name}", LogLevel.Info);
+
+            PanelManager.ColormapManager.Name.text = "";
+        }
+
+        /// <summary>
+        /// Add the custom colormap as an option to the dropdown
+        /// </summary>
+        public void AddColormapOption()
+        {
+            // Create the ColorGradient (added to ColorGradient.Gradients)
+            GradientManager gradient = PanelManager.ColormapManager;
+            new ColorGradient(gradient.Name.text, true, gradient.GetGradient());
+
+            PanelManager.Colormap.AddOptions(new List<string> { gradient.Name.text });
+            PanelManager.Colormap.value = PanelManager.Colormap.options.Count() - 1; // Select the new option
+        }
+
+        /// <summary>
+        /// Enable or disable the save and load buttons depending on the gradients <paramref name="name"/>
+        /// </summary>
+        private void VerifyColormapName(string name)
+        {
+            // Remove leading and trailing whitespace
+            PanelManager.ColormapManager.Name.text = name = name.Trim();
+
+            // Disable saving and deleting if the name is invalid
+            if (string.IsNullOrEmpty(name))
+                PanelManager.ColormapManager.ToggleSaveDelete(false);
+
+            if (ColorGradient.Gradients.ContainsKey(name))
+            {
+                // Existing gradients can only be overwritten/deleted if editable is true
+                if (!ColorGradient.Gradients[name].Editable)
+                    PanelManager.ColormapManager.ToggleSaveDelete(false);
+                else
+                    PanelManager.ColormapManager.ToggleSaveDelete(true);
+            }
+            else
+            {
+                // Deleting is not possible but saving is if the gradient does not yet exist
+                PanelManager.ColormapManager.ToggleSaveDelete(enableSave: true, enableDelete: false);
+            }
         }
     }
 }

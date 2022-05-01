@@ -19,7 +19,7 @@ namespace Heatmap.Unity
 
         public Toggle ShowCustomColormap;
 
-        public GameObject CustomColormap;
+        public GradientManager ColormapManager;
 
         public TMP_Dropdown Colormap;
 
@@ -71,7 +71,7 @@ namespace Heatmap.Unity
         /// </summary>
         public void ToggleCustomColormap(bool show)
         {
-            CustomColormap.SetActive(show);
+            ColormapManager.gameObject.SetActive(show);
 
             ColorBlock colors = ShowCustomColormap.colors;
             colors.normalColor = colors.selectedColor = show ? ToggleOn : ToggleOff;
