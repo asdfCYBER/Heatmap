@@ -47,6 +47,7 @@ namespace Heatmap
         public override async Task OnEnable()
         {
             SettingsIO.Load();
+            ColorGradientIO.Load();
 
             if (Instance != null)
                 Log("Heatmap was already instantiated!", LogLevel.Warning);

@@ -85,6 +85,7 @@
     <Compile Include="Boundaries.cs" />
     <Compile Include="ColorGradient.cs" />
     <Compile Include="ColorGradientBuiltins.cs" />
+    <Compile Include="IO\ColorGradientIO.cs" />
     <Compile Include="IO\NodeTimerIO.cs" />
     <Compile Include="IO\SettingsIO.cs" />
     <Compile Include="IO\Utils.cs" />

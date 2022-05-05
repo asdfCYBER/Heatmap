@@ -28,11 +28,12 @@ namespace Heatmap
 
         private void RegisterGradient(string name)
         {
-            if (string.IsNullOrWhiteSpace(name) || Gradients.ContainsKey(name))
-                throw new ArgumentException($"Gradient name {name} already exists or is invalid");
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException($"The gradient name '{name}' is invalid");
             else
                 Gradients[name] = this;
 
+            // Log gradient details
             StringBuilder gradientText = new StringBuilder();
             foreach (GradientColorKey key in Gradient.colorKeys)
                 gradientText.Append($"\n{key.time}: {key.color}");
@@ -74,35 +75,12 @@ namespace Heatmap
         /// <summary>
         /// Convert a <see cref="UnityEngine.Gradient"/> to a <see cref="ColorGradient"/>
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="editable"></param>
-        /// <param name="gradient"></param>
         public ColorGradient(string name, bool editable, Gradient gradient)
         {
             Name = name;
             Editable = editable;
             Gradient = gradient;
             RegisterGradient(name);
-        }
-
-        /// <summary>
-        /// Delete the gradient from the list of options and the collection of gradients
-        /// </summary>
-        public void Delete()
-        {
-            if (!Editable)
-                return;
-        
-            Gradients.Remove(Name);
-        }
-
-        /// <summary>
-        /// Add this gradient to the UI list of options
-        /// </summary>
-        public void Save()
-        {
-            if (!Editable)
-                return;
         }
     }
 }

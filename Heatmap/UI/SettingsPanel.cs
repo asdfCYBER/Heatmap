@@ -196,7 +196,7 @@ namespace Heatmap.UI
         /// Reset the DeleteAfter inputfield if changes were cancelled,
         /// save the settings if it is confirmed
         /// </summary>
-        /// <param name="result"></param>
+        /// <param name="result">The dialog return value</param>
         private void DeleteAfterChangedDialogResult(DialogResult result)
         {
             Log($"Delete after changes confirmed: {result}", LogLevel.Info);
@@ -220,7 +220,7 @@ namespace Heatmap.UI
         /// <summary>
         /// Disable all inputs on the settingspanel so that only the confirm dialog can be used
         /// </summary>
-        public void DisableControls()
+        private void DisableControls()
         {
             PanelManager.Colormap.enabled = false;
             PanelManager.MeasuringPeriod.enabled = false;
@@ -232,7 +232,7 @@ namespace Heatmap.UI
         /// <summary>
         /// (Re-)enable all inputs on the settingspanel
         /// </summary>
-        public void EnableControls()
+        private void EnableControls()
         {
             PanelManager.Colormap.enabled = true;
             PanelManager.MeasuringPeriod.enabled = true;
@@ -243,7 +243,7 @@ namespace Heatmap.UI
 
         private void ModeSelected(int index)
         {
-            Log($"Colormap changed to {PanelManager.Mode.options[index].text}", LogLevel.Info);
+            Log($"Mode changed to {PanelManager.Mode.options[index].text}", LogLevel.Info);
             Settings.Instance.Mode = PanelManager.Mode.options[index].text;
             Boundaries boundaries = Settings.Instance.BoundaryValues.GetCurrentBoundaries();
             PanelManager.BusynessMinimum.text = boundaries.Minimum.ToString();
@@ -260,13 +260,17 @@ namespace Heatmap.UI
 
             // Set the selected colormap to one of the first option (a built-in colormap)
             // if the currently selected colormap is the one that has to be removed
-            if (PanelManager.Colormap.options[PanelManager.Colormap.value].text == name) // TODO: colormap.captiontext?
+            if (PanelManager.Colormap.captionText.text == name)
                 PanelManager.Colormap.value = PanelManager.Colormap.options.FindIndex(option => option.text == "cividis");
 
             int amount = PanelManager.Colormap.options.RemoveAll(option => option.text == name);
+            ColorGradient.Gradients.Remove(name);
             Log($"Removed {amount} colormap with the name {name}", LogLevel.Info);
 
             PanelManager.ColormapManager.Name.text = "";
+
+            // Save gradients to file
+            ColorGradientIO.Save();
         }
 
         /// <summary>
@@ -280,6 +284,9 @@ namespace Heatmap.UI
 
             PanelManager.Colormap.AddOptions(new List<string> { gradient.Name.text });
             PanelManager.Colormap.value = PanelManager.Colormap.options.Count() - 1; // Select the new option
+
+            // Save gradients to file
+            ColorGradientIO.Save();
         }
 
         /// <summary>
