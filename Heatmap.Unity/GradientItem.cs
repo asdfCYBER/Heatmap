@@ -71,6 +71,12 @@ namespace Heatmap.Unity
             }    
         }
 
+        public void UpdateHex(string value)
+        {
+            HexInput.text = value;
+            OnHexChange(value);
+        }
+
         /// <summary>
         /// Validate <see cref="KeyInput"/> input and update <see cref="Key"/>
         /// </summary>
@@ -95,6 +101,12 @@ namespace Heatmap.Unity
             {
                 KeyInput.text = Key.ToString() + "%";
             }
+        }
+
+        public void UpdateKey(string value)
+        {
+            KeyInput.text = value;
+            OnKeyChange(value);
         }
 
         /// <summary>

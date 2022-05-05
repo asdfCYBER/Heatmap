@@ -167,10 +167,8 @@ namespace Heatmap.Unity
             GameObject newItem = GameObject.Instantiate(Template, Items.content, worldPositionStays: false);
             GradientItem gradientItem = newItem.GetComponent<GradientItem>();
 
-            gradientItem.KeyInput.text = key.ToString();
-            gradientItem.OnKeyChange(gradientItem.KeyInput.text);
-            gradientItem.HexInput.text = ColorUtility.ToHtmlStringRGB(color);
-            gradientItem.OnHexChange(gradientItem.HexInput.text);
+            gradientItem.UpdateKey(key.ToString());
+            gradientItem.UpdateHex(ColorUtility.ToHtmlStringRGB(color));
 
             newItem.SetActive(true);
         }
@@ -190,7 +188,9 @@ namespace Heatmap.Unity
             else
             {
                 int index = selectedItem.transform.GetSiblingIndex();
+                GradientItem item = selectedItem.GetComponent<GradientItem>();
                 newItem = GameObject.Instantiate(selectedItem.gameObject, Items.content, worldPositionStays: false);
+                newItem.GetComponent<GradientItem>().UpdateKey(item.Key.ToString()); // Not sure why this isn't copied
                 newItem.transform.SetSiblingIndex(index + 1);
             }
 
