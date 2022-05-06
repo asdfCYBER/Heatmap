@@ -17,17 +17,19 @@ namespace Heatmap.Unity
 
         public GameObject Template;
 
-        public Button Save;
+        public Button New; // New gradient
+        
+        public Button Save; // Save gradient
 
-        public Button Delete;
+        public Button Delete; // Delete gradient
 
-        public Button Add;
+        public Button Add; // Add gradient item
 
-        public Button Remove;
+        public Button Remove; // Remove gradient item
 
-        public Button MoveDown;
+        public Button MoveDown; // Swap gradient items
 
-        public Button MoveUp;
+        public Button MoveUp; // Swap gradient items
 
         private bool _updateNeeded = false;
 
@@ -41,6 +43,7 @@ namespace Heatmap.Unity
 
         public void Awake()
         {
+            New.onClick.AddListener(OnClickNew);
             Add.onClick.AddListener(OnClickAdd);
             Remove.onClick.AddListener(OnClickRemove);
             MoveUp.onClick.AddListener(OnClickMoveUp);
@@ -207,6 +210,16 @@ namespace Heatmap.Unity
 
             if (selectedItem != null)
                 Destroy(selectedItem.gameObject);
+        }
+
+        /// <summary>
+        /// Remove all items and set Name to "New colormap"
+        /// </summary>
+        private void OnClickNew()
+        {
+            RemoveItems();
+            Name.text = "New colormap";
+            Name.onEndEdit.Invoke("New colormap");
         }
 
         /// <summary>
