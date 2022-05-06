@@ -68,6 +68,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>echo F|xcopy $(TargetPath) "%25USERPROFILE%25/Documents/Heatmap UI/Heatmap UI/Assets/Plugins/$(TargetFileName)" /y</PostBuildEvent>
+    <PostBuildEvent>echo F|xcopy $(TargetPath) "%25USERPROFILE%25/Documents/Heatmap UI/Heatmap UI/Assets/Plugins/$(TargetFileName)" /y
+echo F|xcopy $(TargetPath) "%25APPDATA%25/../LocalLow/bitrich/Rail Route/mods/Heatmap/$(TargetFileName)" /y</PostBuildEvent>
   </PropertyGroup>
 </Project>

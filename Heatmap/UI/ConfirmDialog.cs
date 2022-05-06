@@ -64,7 +64,7 @@ namespace Heatmap.UI
                 return null;
 
             // Load prefab from assets and return
-            return Heatmap.HeatmapUIAssets.LoadAsset<GameObject>("Confirm prompt");
+            return Heatmap.HeatmapUIAssets.LoadAsset<GameObject>("Confirm dialog");
         }
 
         private void OnClickCancel()
