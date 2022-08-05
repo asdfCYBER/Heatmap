@@ -11,6 +11,8 @@ using Heatmap.IO;
 using Heatmap.UI;
 using Utils;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Composites;
 using static Heatmap.Logging.Logging;
 
 namespace Heatmap
@@ -18,25 +20,23 @@ namespace Heatmap
     public class Heatmap : AbstractMod
     {
         public static Heatmap Instance { get; private set; }
-
         public static AssetBundle HeatmapUIAssets { get; } = LoadAssets();
 
-        internal static IControllers _controller;
-
-        internal static ITimeController _timeController;
-
-        private const string _id = "mod.asdfcyber.heatmap";
-
-        private readonly Harmony _harmony = new Harmony(_id);
-
         public override CachedLocalizedString Title => "Heatmap";
-
         public override CachedLocalizedString Description
             => "Colors tracks based on how busy they are";
 
-        private GameObject _timerObject;
+        internal static IControllers _controller;
+        internal static ITimeController _timeController;
 
+        private const string _id = "mod.asdfcyber.heatmap";
+        private readonly Harmony _harmony = new Harmony(_id);
+
+        private GameObject _timerObject;
         private int _timerIteration = 0; // tracks how often the timer has elapsed
+
+        private InputAction _actionToggleHeatmap
+            = new InputAction("Toggle Heatmap", type: InputActionType.Button, binding: "<Keyboard>/h");
 
         /// <summary>
         /// true if the current gamemode is <see cref="GameMode.Play"/>, otherwise false.
@@ -62,9 +62,11 @@ namespace Heatmap
             }
             catch (Exception e)
             {
-                Log($"Exception during patching: {e.GetType()}, {e.Message}",
-                    LogLevel.Exception);
+                Log($"Exception during patching: {e.GetType()}, {e.Message}", LogLevel.Exception);
             }
+
+            // Hotkey functionality
+            _actionToggleHeatmap.performed += delegate { ToolbarButton.Instance.ButtonPressed(); };
 
             await Task.Yield();
         }
@@ -95,12 +97,14 @@ namespace Heatmap
 
                 _timerObject = new GameObject("timer");
                 _timerObject.AddComponent<AutoRefreshTimer>();
+                _actionToggleHeatmap.Enable();
             }
             else
             {
                 AllowOverlay = false;
                 _controller.EventManager.StopListening(_controller.EventManager.LevelStarted, InitializeTracker);
                 UnityEngine.Object.Destroy(_timerObject);
+                _actionToggleHeatmap.Disable();
             }
 
             await Task.Yield();
