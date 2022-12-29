@@ -48,7 +48,7 @@ namespace Heatmap
                     value = tracker.GetOccupiedTimeMinutes(node.name);
                     break;
                 case OverlayMode.MaximumVelocity:
-                    value = node.GetNodeForVisualState().MaxSpeed * 3.6f; // m/s to km/h
+                    value = node.Node.MaxSpeed * 3.6f; // m/s to km/h
                     break;
                 case OverlayMode.NumberOfVisits:
                     value = tracker.GetNodeTimerCount(node.name);
@@ -57,10 +57,10 @@ namespace Heatmap
                     value = tracker.GetAverageVelocity(node);
                     break;
                 case OverlayMode.NodeLength:
-                    value = node.GetNodeForVisualState().Length; // m
+                    value = node.Node.Length; // m
                     break;
                 case OverlayMode.TotalVisits:
-                    value = node.GetNodeForVisualState().UsageCount;
+                    value = node.Node.UsageCount;
                     break;
                 default:
                     Log($"Invalid mode when getting the color for node {node.name}", LogLevel.Exception);
@@ -81,7 +81,7 @@ namespace Heatmap
             TooltipSubject = node;
 
             GetNodeColor(node, out float value);
-            string nodename = node.GetNodeForVisualState().FriendlyName;
+            string nodename = node.Node.FriendlyName;
             string mode = Settings.Instance.Mode;
 
             if (mode == "time spent")

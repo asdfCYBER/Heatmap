@@ -241,7 +241,7 @@ namespace Heatmap
             // The occupied time in milliseconds
             int count = 0;
             float velocitySum = 0;
-            float nodelength = node.GetNodeForVisualState().Length;
+            float nodelength = node.Node.Length;
 
             foreach (NodeTimer nodeTimer in NodeTimers[node.name])
             {

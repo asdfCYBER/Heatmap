@@ -110,11 +110,6 @@ namespace Heatmap.UI
             // Change the icon
             TextMeshProUGUI tmpComponent = _button.GetComponentInChildren<TextMeshProUGUI>();
             tmpComponent.text = "\uF06D"; // fa-regular fa-fire (font awesome 6 icon)
-
-            // Left-align tooltip text, do this last in case something breaks
-            if (tooltip?.HoverPanel?.Panel?.GetComponentInChildren<TMP_Text>() != null)
-                tooltip.HoverPanel.Panel.GetComponentInChildren<TMP_Text>().alignment = 
-                    TextAlignmentOptions.MidlineLeft;
         }
     }
 }

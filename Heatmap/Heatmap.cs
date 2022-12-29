@@ -128,7 +128,7 @@ namespace Heatmap
                 // Not every node has a BoardNode, but there is not a HasBoardNode method
                 try
                 {
-                    node.GetBoardNode().Refresh();
+                    node.BoardNode.Refresh();
                 }
                 catch (NullReferenceException) { }
             }
