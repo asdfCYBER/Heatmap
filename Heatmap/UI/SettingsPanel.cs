@@ -30,7 +30,7 @@ namespace Heatmap.UI
             PanelManager = _panel.GetComponent<SettingsPanelManager>();
 
             // Move the panel so it is next to the toolbar
-            _panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(200, -180);
+            _panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(165, -5);
 
             // Hook up events
             PanelManager.Close.onClick.AddListener(Destroy);
