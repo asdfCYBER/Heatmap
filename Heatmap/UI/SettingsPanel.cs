@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Game;
+using Game.Context;
 using Heatmap.IO;
 using Heatmap.Unity;
 using UnityEngine;
@@ -83,7 +84,7 @@ namespace Heatmap.UI
         public static void Show()
         {
             Log("Opening settings panel", LogLevel.Info);
-            Instance = new SettingsPanel(GameController.Current.UiCanvas.gameObject);
+            Instance = new SettingsPanel(Ctx.Deps.GameButtons.GetComponentInParent<Canvas>().gameObject);
         }
 
         public static void Destroy()

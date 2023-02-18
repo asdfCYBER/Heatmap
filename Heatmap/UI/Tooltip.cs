@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Game;
+using Game.Context;
 using Heatmap.Unity;
 using TMPro;
 using UnityEngine;
@@ -37,7 +38,7 @@ namespace Heatmap.UI
             // Create a tooltip if it does not exist
             if (_tooltipInstance == null)
             {
-                Canvas uiCanvas = GameController.Current.UiCanvas;
+                Canvas uiCanvas = Ctx.Deps.GameButtons.GetComponentInParent<Canvas>();
                 _tooltipInstance = UnityEngine.Object.Instantiate(_prefab,
                     uiCanvas.transform, worldPositionStays: false);
                 _tooltipInstance.GetComponent<TooltipManager>().CanvasRect = 

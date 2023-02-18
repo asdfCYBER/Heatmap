@@ -35,7 +35,7 @@ namespace Heatmap
         private GameObject _timerObject;
         private int _timerIteration = 0; // tracks how often the timer has elapsed
 
-        private InputAction _actionToggleHeatmap
+        private readonly InputAction _actionToggleHeatmap
             = new InputAction("Toggle Heatmap", type: InputActionType.Button, binding: "<Keyboard>/h");
 
         /// <summary>

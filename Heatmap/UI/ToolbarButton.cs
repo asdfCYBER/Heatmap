@@ -32,7 +32,7 @@ namespace Heatmap.UI
         public ToolbarButton()
         {
             // Find the button that will be copied, and the layoutgroup it is in
-            GameButton sourceButton = Ctx.Deps.GameButtons.ContractsButtonHolder;
+            GameButton sourceButton = Ctx.Deps.GameButtons.ContractsButton.GetComponentInParent<GameButton>();
             VerticalLayoutGroup buttonGroup = sourceButton.GetComponentInParent<VerticalLayoutGroup>();
 
             // Copy the button and add it to the layoutgroup
