@@ -98,6 +98,7 @@
     <Compile Include="NodeTimer.cs" />
     <Compile Include="NodeTimerTracker.cs" />
     <Compile Include="OverlayMode.cs" />
+    <Compile Include="Patches\AddButtonPatch.cs" />
     <Compile Include="Patches\ColorPatch.cs" />
     <Compile Include="Patches\DeletePatch.cs" />
     <Compile Include="Patches\LoadPatch.cs" />

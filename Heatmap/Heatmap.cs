@@ -66,7 +66,7 @@ namespace Heatmap
             }
 
             // Hotkey functionality
-            _actionToggleHeatmap.performed += delegate { ToolbarButton.Instance.ButtonPressed(); };
+            _actionToggleHeatmap.performed += delegate { ToolbarButton.ButtonPressed(); };
 
             await Task.Yield();
         }
@@ -93,7 +93,6 @@ namespace Heatmap
             {
                 AllowOverlay = true;
                 _controller.EventManager.StartListening(_controller.EventManager.LevelStarted, InitializeTracker);
-                ToolbarButton.Show();
 
                 _timerObject = new GameObject("timer");
                 _timerObject.AddComponent<AutoRefreshTimer>();
