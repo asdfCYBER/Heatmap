@@ -22,13 +22,15 @@ namespace Heatmap.UI
 
         private static ToggleButton _button;
 
-        internal static int _pressedTimes = 0;
+        private static int _pressedTimes = 0;
 
         /// <summary>
         /// Add a heatmap toggle button to the interface
         /// </summary>
         internal static void Create(InterfaceConfigurationPanelView panel)
         {
+            if (_button != null) return;
+
             Transform content = panel.GetComponentInChildren<ScrollRect>().content.transform;
             try
             {
@@ -55,6 +57,8 @@ namespace Heatmap.UI
                 // Make the button do button things
                 _button.OnClick.RemoveAllListeners();
                 _button.OnClick.AddListener(ButtonPressed);
+                _button.ClearHighlight();
+                _button.SetIsOnWithoutNotify(false);
             }
             catch (NullReferenceException e)
             {
@@ -82,29 +86,7 @@ namespace Heatmap.UI
             Log($"Heatmap has been {(Value ? "enabled" : "disabled")}", LogLevel.Info);
             Heatmap.Instance.RefreshAllNodes();
 
-            if (Value)
-                _button.Highlight();
-            else
-                _button.ClearHighlight();
-        }
-
-        /// <summary>
-        /// Remove localization events, change the tooltip and icon
-        /// </summary>
-        private void CustomiseButton()
-        {
-            // Remove existing LocalizeStringEvents
-            foreach (LocalizeStringEvent localize in _button.GetComponentsInChildren<LocalizeStringEvent>())
-                GameObject.Destroy(localize);
-            
-            // Change the tooltip
-            Game.Hud.Tooltip tooltip = _button.GetComponentInParent<Game.Hud.Tooltip>();
-            tooltip.TooltipText = "Toggle heatmap (hotkey: <b>h</b>)\nDouble click to show settings";
-            tooltip.LocalizedText = new LocalizedString();
-
-            // Change the icon
-            TextMeshProUGUI tmpComponent = _button.GetComponentInChildren<TextMeshProUGUI>();
-            tmpComponent.text = "\uF06D"; // fa-regular fa-fire (font awesome 6 icon)
+            _button.SetIsOnWithoutNotify(Value);
         }
     }
 }
