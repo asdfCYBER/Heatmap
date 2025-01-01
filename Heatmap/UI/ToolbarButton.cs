@@ -48,10 +48,6 @@ namespace Heatmap.UI
                 // Set the label and icon, remove localization I think
                 Transform label = clone.transform.Find("Label holder/Text label");
                 label.GetComponent<TextMeshProUGUI>().text = "Toggle heatmap (hotkey: <b>h</b>)\nDouble click to show settings";
-                Game.Hud.Tooltip tooltip = label.GetComponent<Game.Hud.Tooltip>();
-                tooltip.TooltipText = "Toggle heatmap (hotkey: <b>h</b>)\nDouble click to show settings";
-                tooltip.LocalizedText = new LocalizedString();
-                tooltip.DynamicLocalizedText = new Utils.CachedLocalizedString();
                 _button.IconCode = "\uF06D";
 
                 // Make the button do button things
