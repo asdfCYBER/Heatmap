@@ -144,12 +144,11 @@ namespace Heatmap
 
             _timerIteration++;
 
-            // 25x speed, 15x speed and default: refresh every second,
-            // 5x speed: refresh every 3 seconds, 1x speed: refresh every 10 seconds
+            // Refresh every 5s for 1-2x, every 3s for 2-5x, and every second for > 5x speed
             int maxIteration = 1;
-            if (_timeController.TimeMultiplier == 5)
+            if (_timeController.TimeMultiplier <= 5)
                 maxIteration = 3;
-            else if (_timeController.TimeMultiplier == 1)
+            else if (_timeController.TimeMultiplier <= 2)
                 maxIteration = 5;
 
             if (_timerIteration >= maxIteration)
