@@ -82,7 +82,14 @@ namespace Heatmap.UI
             Log($"Heatmap has been {(Value ? "enabled" : "disabled")}", LogLevel.Info);
             Heatmap.Instance.RefreshAllNodes();
 
-            _button.SetIsOnWithoutNotify(Value);
+            try
+            {
+                _button.SetIsOnWithoutNotify(Value);
+            }
+            catch (NullReferenceException e)
+            {
+                Log("The button was null", LogLevel.Warning);
+            }
         }
     }
 }
