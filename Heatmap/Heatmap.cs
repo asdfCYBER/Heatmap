@@ -114,7 +114,7 @@ namespace Heatmap
             Level level = (Level)args[0];
             Log($"Registering existing trains for level {level.LevelDefinition.Name}",
                 LogLevel.Info);
-            NodeTimerTracker.Instance.RegisterExistingTrains();
+            NodeTimerTracker.Instance.FindExistingTrains();
         }
 
         /// <summary>

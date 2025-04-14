@@ -25,7 +25,7 @@ namespace Heatmap
         /// </summary>
         /// <param name="node">The node which has been entered</param>
         /// <param name="previouslyUnregisted">Whether a train was detected as entering</param>
-        public void RegisterNodeEntered(Node node, bool previouslyUnregistered = false, int trainLength = 0)
+        public void RegisterNodeEntered(Node node, int trainLength)
         {
             if (!NodeTimers.ContainsKey(node.Name))
             {
@@ -36,12 +36,7 @@ namespace Heatmap
             if (!NodeTimers[node.Name].Any(timer => !timer.NodeIsCleared))
             {
                 NodeTimers[node.Name].Add(new NodeTimer(CurrentTime, trainLength));
-
-                if (previouslyUnregistered)
-                    Log($"Found unregistered train on node {node.FriendlyName}, " +
-                        "the node is now occupied", LogLevel.Warning);
-                else
-                    Log($"Registered: node {node.FriendlyName} is now occupied", LogLevel.Debug);
+                Log($"Registered: node {node.FriendlyName} is now occupied", LogLevel.Debug);
             }
         }
 
@@ -76,15 +71,15 @@ namespace Heatmap
         }
 
         /// <summary>
-        /// Registers already occupied nodes in NodeTimerTracker
+        /// Find already occupied nodes in NodeTimerTracker
         /// </summary>
-        public void RegisterExistingTrains()
+        public void FindExistingTrains()
         {
             foreach (Train train in Heatmap._controller.TrainRepository.Trains)
             {
                 foreach (Node node in train.OccupiedNodes)
                 {
-                    RegisterNodeEntered(node, previouslyUnregistered: true);
+                    Log($"Found unregistered train {train.Uuid} on node {node.FriendlyName}", LogLevel.Warning);
                 }
             }
         }
