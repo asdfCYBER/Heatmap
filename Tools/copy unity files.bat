@@ -1,0 +1,1 @@
+robocopy "%userprofile%\Documents\Heatmap UI\Heatmap UI\Assets" "%userprofile%\source\repos\Heatmap\Assets" /E /XD "TextMesh Pro" "AddressableAssetsData" "Locales" "Materials" "Shaders"
