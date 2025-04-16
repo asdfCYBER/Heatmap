@@ -178,7 +178,7 @@ namespace Heatmap.UI
                 {
                     _nextDeleteAfterValue = result;
 
-                    new ConfirmDialog(_panel, new Vector2(610, 0), DeleteAfterChangedDialogResult, 
+                    new ConfirmDialog(_panel, DeleteAfterChangedDialogResult, 
                         "Confirm changes", "Are you sure you want to delete node data sooner?" +
                         $" Any existing data older than {result} minutes will also be deleted.");
 
@@ -223,6 +223,7 @@ namespace Heatmap.UI
         /// </summary>
         private void DisableControls()
         {
+            PanelManager.Mode.enabled = false;
             PanelManager.Colormap.enabled = false;
             PanelManager.MeasuringPeriod.enabled = false;
             PanelManager.BusynessMinimum.enabled = false;
@@ -235,6 +236,7 @@ namespace Heatmap.UI
         /// </summary>
         private void EnableControls()
         {
+            PanelManager.Mode.enabled = true;
             PanelManager.Colormap.enabled = true;
             PanelManager.MeasuringPeriod.enabled = true;
             PanelManager.BusynessMinimum.enabled = true;

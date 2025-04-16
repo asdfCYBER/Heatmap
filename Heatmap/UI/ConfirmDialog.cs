@@ -31,12 +31,10 @@ namespace Heatmap.UI
         /// Create a new yes/no dialog
         /// </summary>
         /// <param name="parent">The GameObject the dialog will be a child of</param>
-        /// <param name="position">The position relative to the <paramref name="parent"/></param>
         /// <param name="result">The method to send this dialog's result to</param>
         /// <param name="title">Title of the dialog</param>
         /// <param name="text">Text (body) of the dialog</param>
-        public ConfirmDialog(GameObject parent, Vector2 position,
-            Action<DialogResult> result, string title, string text)
+        public ConfirmDialog(GameObject parent, Action<DialogResult> result, string title, string text)
         {
             _dialog = UnityEngine.Object.Instantiate(_prefab, parent.transform, worldPositionStays: false);
             _result = result;
@@ -45,7 +43,7 @@ namespace Heatmap.UI
             DialogManager = _dialog.GetComponent<DialogConfirmManager>();
 
             // Set position
-            _dialog.GetComponent<RectTransform>().anchoredPosition = position;
+            _dialog.GetComponent<RectTransform>().position = parent.transform.position + new Vector3(10, -10, 0);
 
             // Hook up events
             DialogManager.Cancel.onClick.AddListener(OnClickCancel);
@@ -55,6 +53,8 @@ namespace Heatmap.UI
             // Initialize fields
             DialogManager.Title.text = title;
             DialogManager.Text.text = text;
+
+            _dialog.SetActive(true);
         }
 
         private static GameObject LoadPrefab()
