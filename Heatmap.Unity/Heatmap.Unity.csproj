@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DialogConfirmManager.cs" />
+    <Compile Include="Draggable.cs" />
     <Compile Include="GradientItem.cs" />
     <Compile Include="GradientManager.cs" />
     <Compile Include="SettingsPanelManager.cs" />
