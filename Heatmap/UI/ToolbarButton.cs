@@ -54,7 +54,7 @@ namespace Heatmap.UI
                 _button.OnClick.RemoveAllListeners();
                 _button.OnClick.AddListener(ButtonPressed);
                 _button.ClearHighlight();
-                _button.SetIsOnWithoutNotify(false);
+                _button.SetIsOnWithoutNotify(Value);
             }
             catch (NullReferenceException e)
             {
